@@ -6,14 +6,15 @@ import * as THREE from "three";
 
 interface StarfieldProps {
   zoom: number;
+  densityScale?: number;
 }
 
-export function Starfield({ zoom }: StarfieldProps) {
+export function Starfield({ zoom, densityScale = 1 }: StarfieldProps) {
   const mesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const positions = useMemo(
     () =>
-      Array.from({ length: 1400 }, () => ({
+      Array.from({ length: Math.round(1400 * densityScale) }, () => ({
         position: new THREE.Vector3(
           THREE.MathUtils.randFloatSpread(420),
           THREE.MathUtils.randFloatSpread(260),

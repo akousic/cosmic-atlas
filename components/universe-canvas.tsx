@@ -10,10 +10,12 @@ import * as THREE from "three";
 
 import { NebulaCloud } from "@/components/experience/nebula-cloud";
 import { Starfield } from "@/components/experience/starfield";
+import { getSceneCameraPreset } from "@/lib/camera-config";
 import { objectById } from "@/lib/catalog";
-import { cameraDistanceToZoom, damp, sceneVisibility, zoomToCameraDistance } from "@/lib/scale";
+import { cameraDistanceToZoom, clamp, damp, sceneVisibility, zoomToCameraDistance } from "@/lib/scale";
 import { useAtlasStore } from "@/lib/store";
 import { SceneId } from "@/lib/types";
+import { DeviceMode } from "@/hooks/use-device-mode";
 
 const EarthScene = lazy(() => import("@/scenes/earth-scene").then((mod) => ({ default: mod.EarthScene })));
 const SolarSystemScene = lazy(() =>
@@ -72,7 +74,9 @@ function getPhysicalLookAt(
   controls: CameraControlsImpl,
   target: [number, number, number],
   zoom: number,
-  selectedId: string
+  selectedId: string,
+  minDistance: number,
+  maxDistance: number
 ) {
   const nextTarget = new THREE.Vector3(...target);
   const currentPosition = controls.getPosition(new THREE.Vector3());
@@ -97,7 +101,8 @@ function getPhysicalLookAt(
   const preferred = (selected ? preferredByScene[selected.scene] : preferredByScene.planet).clone().normalize();
   const blendedDirection = normalizedCurrent.lerp(preferred, selected?.scene === "solar" ? 0.55 : 0.35);
 
-  blendedDirection.multiplyScalar(zoomToCameraDistance(zoom));
+  const desiredDistance = clamp(zoomToCameraDistance(zoom), minDistance, maxDistance);
+  blendedDirection.multiplyScalar(desiredDistance);
   const position = nextTarget.clone().add(blendedDirection);
 
   return {
@@ -106,7 +111,7 @@ function getPhysicalLookAt(
   };
 }
 
-function CameraRig() {
+function CameraRigWithMode({ deviceMode }: { deviceMode: DeviceMode }) {
   const controlsRef = useRef<CameraControlsImpl | null>(null);
   const activeScene = useAtlasStore((state) => state.activeScene);
   const syncViewport = useAtlasStore((state) => state.syncViewport);
@@ -114,7 +119,8 @@ function CameraRig() {
   const targetFocus = useAtlasStore((state) => state.targetFocus);
   const targetZoom = useAtlasStore((state) => state.targetZoom);
   const selectedId = useAtlasStore((state) => state.selectedId);
-  const maxDistance = activeScene === "solar" ? 118 : 72;
+  const preset = getSceneCameraPreset(activeScene, deviceMode);
+  const isMobile = deviceMode === "mobile";
 
   useEffect(() => {
     const controls = controlsRef.current;
@@ -122,7 +128,14 @@ function CameraRig() {
       return;
     }
 
-    const physical = getPhysicalLookAt(controls, targetFocus, targetZoom, selectedId);
+    const physical = getPhysicalLookAt(
+      controls,
+      targetFocus,
+      targetZoom,
+      selectedId,
+      preset.minDistance,
+      preset.maxDistance
+    );
     void controls.setLookAt(
       physical.position[0],
       physical.position[1],
@@ -132,22 +145,22 @@ function CameraRig() {
       physical.target[2],
       true
     );
-  }, [selectedId, targetFocus, targetZoom]);
+  }, [preset.maxDistance, preset.minDistance, selectedId, targetFocus, targetZoom]);
 
   return (
     <CameraControls
       ref={controlsRef}
       makeDefault
-      dollyToCursor={false}
+      dollyToCursor={!isMobile}
       infinityDolly={false}
-      smoothTime={0.9}
-      draggingSmoothTime={0.08}
-      dollySpeed={0.22}
-      minDistance={14}
-      maxDistance={maxDistance}
-      truckSpeed={0.75}
-      azimuthRotateSpeed={0.6}
-      polarRotateSpeed={0.52}
+      smoothTime={isMobile ? 0.72 : 0.9}
+      draggingSmoothTime={isMobile ? 0.12 : 0.08}
+      dollySpeed={isMobile ? 0.16 : 0.22}
+      minDistance={preset.minDistance}
+      maxDistance={preset.maxDistance}
+      truckSpeed={isMobile ? 1.1 : 0.75}
+      azimuthRotateSpeed={isMobile ? 0.48 : 0.6}
+      polarRotateSpeed={isMobile ? 0.42 : 0.52}
       minPolarAngle={0.18}
       maxPolarAngle={Math.PI - 0.18}
       mouseButtons={{
@@ -178,12 +191,14 @@ function CameraRig() {
   );
 }
 
-function Experience() {
+function Experience({ deviceMode }: { deviceMode: DeviceMode }) {
   const selectedId = useAtlasStore((state) => state.selectedId);
   const zoom = useAtlasStore((state) => state.zoom);
   const activeScene = useAtlasStore((state) => state.activeScene);
   const focusObject = useAtlasStore((state) => state.focusObject);
   const setHovered = useAtlasStore((state) => state.setHovered);
+  const reducedEffects = deviceMode === "mobile";
+  const compactLabels = deviceMode === "mobile";
 
   return (
     <>
@@ -191,7 +206,7 @@ function Experience() {
       <fog attach="fog" args={["#02030a", 120, 240]} />
       <ambientLight intensity={0.35} color="#d3e3ff" />
       <directionalLight position={[16, 18, 22]} intensity={0.7} color="#cad6ff" />
-      <Starfield zoom={zoom} />
+      <Starfield zoom={zoom} densityScale={reducedEffects ? 0.66 : 1} />
       <NebulaCloud position={[20, 18, -30]} scale={40} color="rgba(110, 190, 255, 0.6)" />
       <NebulaCloud position={[-28, -12, -18]} scale={34} color="rgba(255, 140, 110, 0.65)" />
 
@@ -200,6 +215,7 @@ function Experience() {
           <EarthScene
             activeId={selectedId}
             intensity={sceneVisibility("planet", activeScene)}
+            reducedEffects={reducedEffects}
             onSelect={focusObject}
             onHover={setHovered}
           />
@@ -208,6 +224,7 @@ function Experience() {
           <SolarSystemScene
             activeId={selectedId}
             intensity={sceneVisibility("solar", activeScene)}
+            compactLabels={compactLabels}
             onSelect={focusObject}
             onHover={setHovered}
           />
@@ -216,6 +233,8 @@ function Experience() {
           <StarNeighborhoodScene
             activeId={selectedId}
             intensity={sceneVisibility("stellar", activeScene)}
+            compactLabels={compactLabels}
+            reducedEffects={reducedEffects}
             onSelect={focusObject}
             onHover={setHovered}
           />
@@ -224,6 +243,8 @@ function Experience() {
           <MilkyWayScene
             activeId={selectedId}
             intensity={sceneVisibility("galactic", activeScene)}
+            compactLabels={compactLabels}
+            reducedEffects={reducedEffects}
             onSelect={focusObject}
             onHover={setHovered}
           />
@@ -232,6 +253,7 @@ function Experience() {
           <GalaxyClusterScene
             activeId={selectedId}
             intensity={sceneVisibility("cluster", activeScene)}
+            compactLabels={compactLabels}
             onSelect={focusObject}
             onHover={setHovered}
           />
@@ -240,33 +262,39 @@ function Experience() {
           <BlackHoleScene
             activeId={selectedId}
             intensity={sceneVisibility("blackhole", activeScene)}
+            compactLabels={compactLabels}
             onSelect={focusObject}
             onHover={setHovered}
           />
         </SceneLayer>
       </Suspense>
 
-      <CameraRig />
+      <CameraRigWithMode deviceMode={deviceMode} />
 
       <EffectComposer>
-        <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.65} intensity={0.55} />
-        <Noise opacity={0.02} />
-        <Vignette eskil={false} offset={0.12} darkness={0.6} />
+        <Bloom
+          luminanceThreshold={0.2}
+          luminanceSmoothing={0.65}
+          intensity={deviceMode === "mobile" ? 0.38 : 0.55}
+        />
+        <Noise opacity={deviceMode === "mobile" ? 0.012 : 0.02} />
+        <Vignette eskil={false} offset={0.12} darkness={deviceMode === "mobile" ? 0.48 : 0.6} />
       </EffectComposer>
     </>
   );
 }
 
-export function UniverseCanvas() {
+export function UniverseCanvas({ deviceMode }: { deviceMode: DeviceMode }) {
+  const isMobile = deviceMode === "mobile";
   return (
     <div className="absolute inset-0">
       <Canvas
         gl={{ antialias: true, powerPreference: "high-performance" }}
-        dpr={[1, 1.8]}
+        dpr={isMobile ? [1, 1.2] : [1, 1.8]}
         camera={{ position: [0, 0, zoomToCameraDistance(0.08)], fov: 42, near: 0.1, far: 1000 }}
       >
         {/* Each scene owns a compressed coordinate space, and scene changes happen only via explicit navigation. */}
-        <Experience />
+        <Experience deviceMode={deviceMode} />
       </Canvas>
     </div>
   );

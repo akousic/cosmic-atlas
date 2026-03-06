@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 
 import { useGuidedJourney } from "@/hooks/use-guided-journey";
+import { useDeviceMode } from "@/hooks/use-device-mode";
 import { useAtlasStore } from "@/lib/store";
 import { LandingHero } from "@/components/landing-hero";
 import { UniverseCanvas } from "@/components/universe-canvas";
@@ -14,12 +15,13 @@ import { TopBar } from "@/components/ui/top-bar";
 export function CosmicAtlasApp() {
   const started = useAtlasStore((state) => state.started);
   const start = useAtlasStore((state) => state.start);
+  const { deviceMode } = useDeviceMode();
 
   useGuidedJourney();
 
   return (
     <main className="grain relative min-h-screen overflow-hidden bg-space-grid bg-[length:190px_190px]">
-      <UniverseCanvas />
+      <UniverseCanvas deviceMode={deviceMode} />
 
       <motion.div
         initial={false}
@@ -29,10 +31,10 @@ export function CosmicAtlasApp() {
 
       {started ? (
         <>
-          <TopBar />
-          <InfoPanel />
-          <PanelToggles />
-          <ScaleIndicator />
+          <TopBar deviceMode={deviceMode} />
+          <InfoPanel deviceMode={deviceMode} />
+          <PanelToggles deviceMode={deviceMode} />
+          <ScaleIndicator deviceMode={deviceMode} />
         </>
       ) : (
         <LandingHero onStart={start} />

@@ -7,11 +7,18 @@ import { blackHoles } from "@/data/blackholes";
 interface BlackHoleSceneProps {
   activeId: string;
   intensity: number;
+  compactLabels?: boolean;
   onSelect: (id: string) => void;
   onHover: (id: string | null) => void;
 }
 
-export function BlackHoleScene({ activeId, intensity, onSelect, onHover }: BlackHoleSceneProps) {
+export function BlackHoleScene({
+  activeId,
+  intensity,
+  compactLabels = false,
+  onSelect,
+  onHover
+}: BlackHoleSceneProps) {
   const primary = blackHoles.find((item) => item.id === activeId) ?? blackHoles[1];
 
   return (
@@ -26,6 +33,7 @@ export function BlackHoleScene({ activeId, intensity, onSelect, onHover }: Black
           color={hole.accent}
           size={hole.radiusVisual * 0.45}
           active={activeId === hole.id}
+          labelVisible={!compactLabels || activeId === hole.id || hole.id === "m87-star"}
           opacity={intensity}
           onClick={() => onSelect(hole.id)}
           onHover={(hovering) => onHover(hovering ? hole.id : null)}

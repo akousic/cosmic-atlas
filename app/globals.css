@@ -22,6 +22,7 @@ body {
 
 body {
   font-family: var(--font-sans), sans-serif;
+  overscroll-behavior: none;
 }
 
 * {
@@ -43,6 +44,15 @@ canvas {
     0 24px 80px rgba(0, 0, 0, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(16px);
+}
+
+.glass-panel-soft {
+  background: linear-gradient(180deg, rgba(6, 8, 18, 0.7), rgba(6, 9, 20, 0.42));
+  border-color: rgba(170, 203, 255, 0.18);
+  box-shadow:
+    0 22px 70px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(18px);
 }
 
 .text-gradient {
@@ -78,4 +88,10 @@ canvas {
   background: rgba(118, 215, 255, 0.1);
   border-color: rgba(170, 203, 255, 0.36);
   transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .control-button:hover {
+    transform: none;
+  }
 }
