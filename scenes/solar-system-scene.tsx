@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { ObjectMarker } from "@/components/experience/object-marker";
 import { PlanetMesh } from "@/components/experience/planet-mesh";
 import { planets } from "@/data/planets";
+import { getSolarObjectPosition, getSolarOrbitPoints } from "@/lib/solar-layout";
 
 interface SolarSystemSceneProps {
   activeId: string;
@@ -14,20 +15,31 @@ interface SolarSystemSceneProps {
   onHover: (id: string | null) => void;
 }
 
+function getSolarDisplayRadius(id: string, radius: number) {
+  if (id === "jupiter") {
+    return 2.35;
+  }
+  if (id === "saturn") {
+    return 2.1;
+  }
+  if (id === "uranus" || id === "neptune") {
+    return 1.65;
+  }
+  if (id === "earth-orbit") {
+    return 1.08;
+  }
+  return radius;
+}
+
 export function SolarSystemScene({ activeId, intensity, onSelect, onHover }: SolarSystemSceneProps) {
   const sun = planets.find((item) => item.id === "sun");
   const solarBodies = planets.filter((item) => item.scene === "solar" && item.id !== "sun");
+  const activeBody = solarBodies.find((item) => item.id === activeId);
   const orbitCurves = useMemo(
     () =>
       solarBodies
-        .filter((body) => body.orbitRadius)
-        .map((body) => {
-          const radius = body.orbitRadius ?? 0;
-          return Array.from({ length: 72 }, (_, index) => {
-            const angle = (index / 71) * Math.PI * 2;
-            return [Math.cos(angle) * radius, Math.sin(angle) * radius * 0.08, 0] as [number, number, number];
-          });
-        }),
+        .filter((body) => body.orbitRadius && (body.kind === "planet" || body.id === "kuiper-belt"))
+        .map((body) => getSolarOrbitPoints(body)),
     [solarBodies]
   );
 
@@ -37,7 +49,7 @@ export function SolarSystemScene({ activeId, intensity, onSelect, onHover }: Sol
 
   return (
     <group>
-      <pointLight position={[0, 0, 10]} intensity={4} color="#ffd08a" />
+      <pointLight position={[0, 0, 10]} intensity={4 * intensity} color="#ffd08a" />
       <group
         onClick={(event) => {
           event.stopPropagation();
@@ -56,15 +68,28 @@ export function SolarSystemScene({ activeId, intensity, onSelect, onHover }: Sol
       </group>
 
       {orbitCurves.map((points, index) => (
-        <Line key={index} points={points} color="rgba(255,255,255,0.18)" transparent opacity={0.16} />
+        <Line
+          key={index}
+          points={points}
+          color="rgba(255,255,255,0.18)"
+          transparent
+          opacity={0.16 * intensity}
+        />
       ))}
 
       {solarBodies.map((body) => {
         const isMajor = body.kind === "planet" && ((body.radius ?? 0) > 1.5 || body.id === "earth-orbit");
-        const showMesh = isMajor;
+        const distanceFromActive = activeBody ? Math.abs((activeBody.position[0] ?? 0) - body.position[0]) : Infinity;
+        const shouldRenderFullMesh =
+          body.id === activeId ||
+          body.id === "earth-orbit" ||
+          body.id === "sun" ||
+          (isMajor && distanceFromActive < 28);
+        const showMesh = shouldRenderFullMesh;
+        const displayRadius = getSolarDisplayRadius(body.id, body.radius ?? 1);
 
         return (
-          <group key={body.id} position={body.position}>
+          <group key={body.id} position={getSolarObjectPosition(body)}>
             {showMesh ? (
               <group
                 onClick={(event) => {
@@ -75,7 +100,7 @@ export function SolarSystemScene({ activeId, intensity, onSelect, onHover }: Sol
                 onPointerOut={() => onHover(null)}
               >
                 <PlanetMesh
-                  radius={body.radius ?? 1}
+                  radius={displayRadius}
                   color={body.accent}
                   style={body.textureStyle}
                   ring={body.id === "saturn"}
@@ -83,7 +108,7 @@ export function SolarSystemScene({ activeId, intensity, onSelect, onHover }: Sol
                   rotationSpeed={body.rotationSpeed}
                   opacity={intensity}
                 />
-                <Billboard position={[0, (body.radius ?? 1) * 2.15 + 1.1, 0]}>
+                <Billboard position={[0, displayRadius * 2.15 + 1.1, 0]}>
                   <Text
                     fontSize={body.id === "jupiter" || body.id === "saturn" || body.id === "uranus" ? 1.1 : 0.82}
                     fillOpacity={intensity}

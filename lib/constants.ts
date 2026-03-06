@@ -10,7 +10,7 @@ export const SCENE_ORDER: SceneId[] = [
 ];
 
 export const SCENE_LABELS: Record<SceneId, string> = {
-  planet: "Planet",
+  planet: "Earth",
   solar: "Solar System",
   stellar: "Stellar",
   galactic: "Galactic",

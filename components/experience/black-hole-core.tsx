@@ -127,7 +127,7 @@ export function BlackHoleCore({ radius, opacity = 1 }: BlackHoleCoreProps) {
           scale={0.15 + particle.offset * 0.2}
         >
           <sphereGeometry args={[1, 8, 8]} />
-          <meshBasicMaterial color="#ffe4a0" />
+          <meshBasicMaterial color="#ffe4a0" transparent opacity={0.7 * opacity} />
         </mesh>
       ))}
     </group>

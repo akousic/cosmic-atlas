@@ -38,7 +38,11 @@ export interface PlanetData extends CosmicObject {
   distanceFromSunAU?: number;
   moons?: number;
   textureStyle: "earth" | "rocky" | "venus" | "gas" | "ice" | "moon";
+  orbitCenterId?: string;
   orbitRadius?: number;
+  orbitAngleDeg?: number;
+  orbitInclinationDeg?: number;
+  orbitAscendingNodeDeg?: number;
   rotationSpeed?: number;
 }
 

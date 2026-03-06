@@ -66,7 +66,7 @@ export const planets: PlanetData[] = [
     name: "Mercury",
     kind: "planet",
     scene: "solar",
-    position: [9, 0.15, 0],
+    position: [-8.9, -0.9, -0.6],
     accent: "#d8c1a3",
     distanceFromEarth: "77 million km average",
     diameter: "4,880 km",
@@ -81,6 +81,9 @@ export const planets: PlanetData[] = [
     moons: 0,
     textureStyle: "rocky",
     orbitRadius: 9,
+    orbitAngleDeg: 186,
+    orbitInclinationDeg: 7,
+    orbitAscendingNodeDeg: 48,
     rotationSpeed: 0.08
   },
   {
@@ -88,7 +91,7 @@ export const planets: PlanetData[] = [
     name: "Venus",
     kind: "planet",
     scene: "solar",
-    position: [15, -1.25, 0],
+    position: [-14.2, 4, 0.2],
     accent: "#f2b36a",
     distanceFromEarth: "41 million km closest",
     diameter: "12,104 km",
@@ -103,6 +106,9 @@ export const planets: PlanetData[] = [
     moons: 0,
     textureStyle: "venus",
     orbitRadius: 15,
+    orbitAngleDeg: 164,
+    orbitInclinationDeg: 3.4,
+    orbitAscendingNodeDeg: 76,
     rotationSpeed: 0.03
   },
   {
@@ -110,7 +116,7 @@ export const planets: PlanetData[] = [
     name: "Earth",
     kind: "planet",
     scene: "solar",
-    position: [23.5, 0.1, 0],
+    position: [-10, 21.1, 0],
     accent: "#7cc7ff",
     distanceFromEarth: "Home world",
     diameter: "12,742 km",
@@ -125,6 +131,9 @@ export const planets: PlanetData[] = [
     moons: 1,
     textureStyle: "earth",
     orbitRadius: 23.5,
+    orbitAngleDeg: 115,
+    orbitInclinationDeg: 0,
+    orbitAscendingNodeDeg: 0,
     rotationSpeed: 0.14
   } as PlanetData,
   {
@@ -132,7 +141,7 @@ export const planets: PlanetData[] = [
     name: "Mars",
     kind: "planet",
     scene: "solar",
-    position: [33, 1.4, 0],
+    position: [11.3, 30.9, 0.6],
     accent: "#ff7a52",
     distanceFromEarth: "54.6 million km closest",
     diameter: "6,779 km",
@@ -147,6 +156,9 @@ export const planets: PlanetData[] = [
     moons: 2,
     textureStyle: "rocky",
     orbitRadius: 33,
+    orbitAngleDeg: 70,
+    orbitInclinationDeg: 1.85,
+    orbitAscendingNodeDeg: 49,
     rotationSpeed: 0.08
   },
   {
@@ -154,7 +166,7 @@ export const planets: PlanetData[] = [
     name: "Jupiter",
     kind: "planet",
     scene: "solar",
-    position: [44, -2, 0],
+    position: [39.9, 16.9, 0.4],
     accent: "#ffcb97",
     distanceFromEarth: "588 million km average",
     diameter: "139,820 km",
@@ -169,6 +181,9 @@ export const planets: PlanetData[] = [
     moons: 95,
     textureStyle: "gas",
     orbitRadius: 44,
+    orbitAngleDeg: 23,
+    orbitInclinationDeg: 1.3,
+    orbitAscendingNodeDeg: 100,
     rotationSpeed: 0.14
   },
   {
@@ -176,7 +191,7 @@ export const planets: PlanetData[] = [
     name: "Europa",
     kind: "moon",
     scene: "solar",
-    position: [49, 2.4, 0],
+    position: [42.9, 20.1, 1.4],
     accent: "#d7e8ff",
     distanceFromEarth: "628 million km average",
     diameter: "3,122 km",
@@ -189,6 +204,11 @@ export const planets: PlanetData[] = [
     radius: 0.72,
     moons: 0,
     textureStyle: "moon",
+    orbitCenterId: "jupiter",
+    orbitRadius: 4.3,
+    orbitAngleDeg: 48,
+    orbitInclinationDeg: 0.47,
+    orbitAscendingNodeDeg: 42,
     rotationSpeed: 0.09
   },
   {
@@ -196,7 +216,7 @@ export const planets: PlanetData[] = [
     name: "Ganymede",
     kind: "moon",
     scene: "solar",
-    position: [51, -4.5, 0],
+    position: [35.8, 13.9, -1.8],
     accent: "#cbbba8",
     distanceFromEarth: "628 million km average",
     diameter: "5,268 km",
@@ -209,6 +229,11 @@ export const planets: PlanetData[] = [
     radius: 0.95,
     moons: 0,
     textureStyle: "moon",
+    orbitCenterId: "jupiter",
+    orbitRadius: 6.1,
+    orbitAngleDeg: 212,
+    orbitInclinationDeg: 0.2,
+    orbitAscendingNodeDeg: 18,
     rotationSpeed: 0.07
   },
   {
@@ -216,7 +241,7 @@ export const planets: PlanetData[] = [
     name: "Saturn",
     kind: "planet",
     scene: "solar",
-    position: [61, 1.3, 0],
+    position: [59.3, -10.5, -1.3],
     accent: "#ffe7a0",
     distanceFromEarth: "1.2 billion km average",
     diameter: "116,460 km",
@@ -231,6 +256,9 @@ export const planets: PlanetData[] = [
     moons: 146,
     textureStyle: "gas",
     orbitRadius: 61,
+    orbitAngleDeg: 350,
+    orbitInclinationDeg: 2.49,
+    orbitAscendingNodeDeg: 113,
     rotationSpeed: 0.11
   },
   {
@@ -238,7 +266,7 @@ export const planets: PlanetData[] = [
     name: "Titan",
     kind: "moon",
     scene: "solar",
-    position: [68.5, 7.8, 1.2],
+    position: [64.8, -5.1, 0.4],
     accent: "#ffcb7a",
     distanceFromEarth: "1.2 billion km average",
     diameter: "5,149 km",
@@ -251,6 +279,11 @@ export const planets: PlanetData[] = [
     radius: 1,
     moons: 0,
     textureStyle: "moon",
+    orbitCenterId: "saturn",
+    orbitRadius: 7.1,
+    orbitAngleDeg: 58,
+    orbitInclinationDeg: 0.35,
+    orbitAscendingNodeDeg: 28,
     rotationSpeed: 0.05
   },
   {
@@ -258,7 +291,7 @@ export const planets: PlanetData[] = [
     name: "Uranus",
     kind: "planet",
     scene: "solar",
-    position: [78, -1.8, 0],
+    position: [63.1, -45.8, -1.2],
     accent: "#a6e8ff",
     distanceFromEarth: "2.6 billion km average",
     diameter: "50,724 km",
@@ -273,6 +306,9 @@ export const planets: PlanetData[] = [
     moons: 28,
     textureStyle: "ice",
     orbitRadius: 78,
+    orbitAngleDeg: 324,
+    orbitInclinationDeg: 0.77,
+    orbitAscendingNodeDeg: 74,
     rotationSpeed: 0.06
   },
   {
@@ -280,7 +316,7 @@ export const planets: PlanetData[] = [
     name: "Neptune",
     kind: "planet",
     scene: "solar",
-    position: [94, 1.6, 0],
+    position: [47, -81.4, -2.7],
     accent: "#598fff",
     distanceFromEarth: "4.3 billion km average",
     diameter: "49,244 km",
@@ -295,6 +331,9 @@ export const planets: PlanetData[] = [
     moons: 16,
     textureStyle: "ice",
     orbitRadius: 94,
+    orbitAngleDeg: 300,
+    orbitInclinationDeg: 1.77,
+    orbitAscendingNodeDeg: 131,
     rotationSpeed: 0.08
   },
   {
@@ -302,7 +341,7 @@ export const planets: PlanetData[] = [
     name: "Kuiper Belt",
     kind: "region",
     scene: "solar",
-    position: [116, 0, 0],
+    position: [5.1, -115.8, -7.2],
     accent: "#9ed0ff",
     distanceFromEarth: "30 to 50 AU",
     diameter: "Billions of icy bodies",
@@ -315,6 +354,10 @@ export const planets: PlanetData[] = [
     radius: 1.4,
     moons: 0,
     textureStyle: "moon",
+    orbitRadius: 116,
+    orbitAngleDeg: 272,
+    orbitInclinationDeg: 8,
+    orbitAscendingNodeDeg: 110,
     rotationSpeed: 0
   } as PlanetData
 ];

@@ -2,9 +2,10 @@
 
 import { create } from "zustand";
 
-import { GUIDED_STEPS } from "@/lib/constants";
+import { GUIDED_STEPS, SCENE_TARGETS } from "@/lib/constants";
 import { objectById } from "@/lib/catalog";
-import { activeSceneForZoom, clamp } from "@/lib/scale";
+import { clamp } from "@/lib/scale";
+import { getSolarObjectPosition } from "@/lib/solar-layout";
 import { SceneId } from "@/lib/types";
 
 type ExploreMode = "explore" | "guided";
@@ -40,6 +41,15 @@ interface AtlasState {
 
 const DEFAULT_SELECTION = "earth";
 
+function getFocusPosition(id: string) {
+  const object = objectById[id];
+  if (!object) {
+    return [0, 0, 0] as [number, number, number];
+  }
+
+  return object.scene === "solar" ? getSolarObjectPosition(object as never) : object.position;
+}
+
 export const useAtlasStore = create<AtlasState>((set, get) => ({
   started: false,
   mode: "explore",
@@ -58,19 +68,18 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   setMode: (mode) => set({ mode }),
   nudgeZoom: (delta) => {
     const next = clamp(get().targetZoom + delta, 0.02, 1);
-    set({ targetZoom: next, activeScene: activeSceneForZoom(next) });
+    set({ targetZoom: next });
   },
   setZoomTarget: (value) => {
     const next = clamp(value, 0.02, 1);
-    set({ targetZoom: next, activeScene: activeSceneForZoom(next) });
+    set({ targetZoom: next });
   },
   setPanTarget: (pan) => set({ targetPan: pan }),
   syncViewport: (focus, zoom) =>
     set({
       zoom,
       focus,
-      pan: [0, 0],
-      activeScene: activeSceneForZoom(zoom)
+      pan: [0, 0]
     }),
   setHovered: (id) => set({ hoveredId: id }),
   focusObject: (id) => {
@@ -78,10 +87,11 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     if (!object) {
       return;
     }
+    const targetFocus = object.scene === "solar" ? getSolarObjectPosition(object as never) : object.position;
 
     set({
       selectedId: id,
-      targetFocus: object.position,
+      targetFocus,
       targetPan: [0, 0],
       targetZoom: object.focusZoom,
       activeScene: object.scene,
@@ -89,20 +99,26 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     });
   },
   toggleInfoPanel: () => set((state) => ({ showInfoPanel: !state.showInfoPanel })),
-  resetView: () =>
+  resetView: () => {
+    const activeScene = get().activeScene;
+    const resetTargetId = SCENE_TARGETS[activeScene] ?? DEFAULT_SELECTION;
+    const resetObject = objectById[resetTargetId];
+    const targetFocus = getFocusPosition(resetTargetId);
+
     set({
       mode: "explore",
-      selectedId: DEFAULT_SELECTION,
+      selectedId: resetTargetId,
       hoveredId: null,
-      zoom: 0.08,
-      targetZoom: 0.08,
+      zoom: resetObject?.focusZoom ?? 0.08,
+      targetZoom: resetObject?.focusZoom ?? 0.08,
       pan: [0, 0],
       targetPan: [0, 0],
-      focus: [0, 0, 0],
-      targetFocus: [0, 0, 0],
+      focus: targetFocus,
+      targetFocus,
       guidedIndex: 0,
-      activeScene: "planet"
-    }),
+      activeScene
+    });
+  },
   startGuidedJourney: () => {
     const firstStep = GUIDED_STEPS[0];
     set({ mode: "guided", guidedIndex: 0 });

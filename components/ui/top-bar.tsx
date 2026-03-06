@@ -9,6 +9,7 @@ export function TopBar() {
   const setMode = useAtlasStore((state) => state.setMode);
   const startGuidedJourney = useAtlasStore((state) => state.startGuidedJourney);
   const resetView = useAtlasStore((state) => state.resetView);
+  const focusObject = useAtlasStore((state) => state.focusObject);
 
   return (
     <motion.div
@@ -20,10 +21,10 @@ export function TopBar() {
         <p className="text-xs uppercase tracking-[0.45em] text-white/55">Cinematic Universe Map</p>
         <h1 className="mt-2 font-display text-4xl text-gradient">Cosmic Atlas</h1>
         <p className="mt-2 text-sm text-white/70">
-          Continuous cosmic navigation from Earth to galaxy clusters and iconic black holes.
+          Explicit scene navigation with local zoom and orbit controls inside each scale.
         </p>
         <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-white/48">
-          Scroll to zoom • Drag to pan • Right-drag to orbit • Click to dive in
+          Scroll or pinch to zoom • Drag to orbit • Right-drag to pan • Click to dive in
         </p>
       </div>
 
@@ -34,6 +35,15 @@ export function TopBar() {
           </button>
           <button className="control-button rounded-full px-4 py-2 text-sm" onClick={startGuidedJourney}>
             Guided Journey{mode === "guided" ? " •" : ""}
+          </button>
+          <button
+            className="control-button rounded-full px-4 py-2 text-sm"
+            onClick={() => {
+              setMode("explore");
+              focusObject("earth");
+            }}
+          >
+            Back to Earth
           </button>
           <button className="control-button rounded-full px-4 py-2 text-sm" onClick={resetView}>
             Reset View
