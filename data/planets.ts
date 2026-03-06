@@ -1,0 +1,320 @@
+import { PlanetData } from "@/lib/types";
+
+export const planets: PlanetData[] = [
+  {
+    id: "earth",
+    name: "Earth",
+    kind: "planet",
+    scene: "planet",
+    position: [0, 0, 0],
+    accent: "#7cc7ff",
+    distanceFromEarth: "0 light-seconds",
+    diameter: "12,742 km",
+    facts: [
+      "Only known planet with surface oceans and life",
+      "71% of the surface is covered by water"
+    ],
+    description: "A temperate rocky world wrapped in clouds, oceans, and a thin blue atmosphere.",
+    focusZoom: 0.08,
+    radius: 4.8,
+    distanceFromSunAU: 1,
+    moons: 1,
+    textureStyle: "earth",
+    rotationSpeed: 0.18
+  },
+  {
+    id: "moon",
+    name: "Moon",
+    kind: "moon",
+    scene: "planet",
+    position: [11, 2, 0],
+    accent: "#e9eef7",
+    distanceFromEarth: "384,400 km",
+    diameter: "3,475 km",
+    facts: [
+      "The same side always faces Earth due to tidal locking",
+      "Its gravity drives much of Earth's ocean tides"
+    ],
+    description: "Earth's cratered companion and the anchor for human deep-space exploration.",
+    focusZoom: 0.12,
+    radius: 1.2,
+    moons: 0,
+    textureStyle: "moon",
+    rotationSpeed: 0.06
+  },
+  {
+    id: "sun",
+    name: "Sun",
+    kind: "star",
+    scene: "solar",
+    position: [0, 0, 0],
+    accent: "#ffbf67",
+    distanceFromEarth: "1 AU",
+    diameter: "1.39 million km",
+    facts: [
+      "Contains 99.8% of the Solar System's mass",
+      "Powered by nuclear fusion in its core"
+    ],
+    description: "The Solar System's star, rendered as a luminous anchor for every orbiting world.",
+    focusZoom: 0.2,
+    radius: 5.8,
+    textureStyle: "gas",
+    rotationSpeed: 0.04
+  } as PlanetData,
+  {
+    id: "mercury",
+    name: "Mercury",
+    kind: "planet",
+    scene: "solar",
+    position: [9, 0.15, 0],
+    accent: "#d8c1a3",
+    distanceFromEarth: "77 million km average",
+    diameter: "4,880 km",
+    facts: [
+      "Shortest year in the Solar System",
+      "Extreme temperature swings between day and night"
+    ],
+    description: "A sun-scorched rocky planet with heavily cratered terrain.",
+    focusZoom: 0.22,
+    radius: 0.78,
+    distanceFromSunAU: 0.39,
+    moons: 0,
+    textureStyle: "rocky",
+    orbitRadius: 9,
+    rotationSpeed: 0.08
+  },
+  {
+    id: "venus",
+    name: "Venus",
+    kind: "planet",
+    scene: "solar",
+    position: [15, -1.25, 0],
+    accent: "#f2b36a",
+    distanceFromEarth: "41 million km closest",
+    diameter: "12,104 km",
+    facts: [
+      "Thick CO2 atmosphere traps intense heat",
+      "Rotates backward compared with most planets"
+    ],
+    description: "An inferno planet shrouded by reflective sulfuric-acid clouds.",
+    focusZoom: 0.24,
+    radius: 1.25,
+    distanceFromSunAU: 0.72,
+    moons: 0,
+    textureStyle: "venus",
+    orbitRadius: 15,
+    rotationSpeed: 0.03
+  },
+  {
+    id: "earth-orbit",
+    name: "Earth",
+    kind: "planet",
+    scene: "solar",
+    position: [23.5, 0.1, 0],
+    accent: "#7cc7ff",
+    distanceFromEarth: "Home world",
+    diameter: "12,742 km",
+    facts: [
+      "Third planet from the Sun",
+      "Our reference world inside the Solar System view"
+    ],
+    description: "Earth placed on its proper orbital lane in the compressed Solar System map.",
+    focusZoom: 0.25,
+    radius: 1.16,
+    distanceFromSunAU: 1,
+    moons: 1,
+    textureStyle: "earth",
+    orbitRadius: 23.5,
+    rotationSpeed: 0.14
+  } as PlanetData,
+  {
+    id: "mars",
+    name: "Mars",
+    kind: "planet",
+    scene: "solar",
+    position: [33, 1.4, 0],
+    accent: "#ff7a52",
+    distanceFromEarth: "54.6 million km closest",
+    diameter: "6,779 km",
+    facts: [
+      "Home to the tallest volcano in the Solar System",
+      "Ancient river valleys hint at a wetter past"
+    ],
+    description: "A dusty red desert world with polar ice caps and giant shield volcanoes.",
+    focusZoom: 0.27,
+    radius: 0.96,
+    distanceFromSunAU: 1.52,
+    moons: 2,
+    textureStyle: "rocky",
+    orbitRadius: 33,
+    rotationSpeed: 0.08
+  },
+  {
+    id: "jupiter",
+    name: "Jupiter",
+    kind: "planet",
+    scene: "solar",
+    position: [44, -2, 0],
+    accent: "#ffcb97",
+    distanceFromEarth: "588 million km average",
+    diameter: "139,820 km",
+    facts: [
+      "Largest planet in the Solar System",
+      "The Great Red Spot is a giant storm larger than Earth"
+    ],
+    description: "A striped gas giant with immense storms and a magnetosphere that dominates nearby space.",
+    focusZoom: 0.31,
+    radius: 3.2,
+    distanceFromSunAU: 5.2,
+    moons: 95,
+    textureStyle: "gas",
+    orbitRadius: 44,
+    rotationSpeed: 0.14
+  },
+  {
+    id: "europa",
+    name: "Europa",
+    kind: "moon",
+    scene: "solar",
+    position: [49, 2.4, 0],
+    accent: "#d7e8ff",
+    distanceFromEarth: "628 million km average",
+    diameter: "3,122 km",
+    facts: [
+      "An ice shell may cover a global subsurface ocean",
+      "One of the best places to search for extraterrestrial life nearby"
+    ],
+    description: "A bright icy moon whose fractured crust hints at liquid water below.",
+    focusZoom: 0.32,
+    radius: 0.72,
+    moons: 0,
+    textureStyle: "moon",
+    rotationSpeed: 0.09
+  },
+  {
+    id: "ganymede",
+    name: "Ganymede",
+    kind: "moon",
+    scene: "solar",
+    position: [51, -4.5, 0],
+    accent: "#cbbba8",
+    distanceFromEarth: "628 million km average",
+    diameter: "5,268 km",
+    facts: [
+      "Largest moon in the Solar System",
+      "Only moon known to have its own magnetic field"
+    ],
+    description: "A layered ice-and-rock moon larger than Mercury.",
+    focusZoom: 0.32,
+    radius: 0.95,
+    moons: 0,
+    textureStyle: "moon",
+    rotationSpeed: 0.07
+  },
+  {
+    id: "saturn",
+    name: "Saturn",
+    kind: "planet",
+    scene: "solar",
+    position: [61, 1.3, 0],
+    accent: "#ffe7a0",
+    distanceFromEarth: "1.2 billion km average",
+    diameter: "116,460 km",
+    facts: [
+      "Its rings are made of ice and rock fragments",
+      "Less dense than water on average"
+    ],
+    description: "A pale gas giant encircled by the Solar System's most iconic ring system.",
+    focusZoom: 0.34,
+    radius: 2.8,
+    distanceFromSunAU: 9.58,
+    moons: 146,
+    textureStyle: "gas",
+    orbitRadius: 61,
+    rotationSpeed: 0.11
+  },
+  {
+    id: "titan",
+    name: "Titan",
+    kind: "moon",
+    scene: "solar",
+    position: [68.5, 7.8, 1.2],
+    accent: "#ffcb7a",
+    distanceFromEarth: "1.2 billion km average",
+    diameter: "5,149 km",
+    facts: [
+      "Only moon with a thick atmosphere",
+      "Has lakes and rivers of liquid methane"
+    ],
+    description: "A hazy orange moon with weather, dunes, and hydrocarbon seas.",
+    focusZoom: 0.35,
+    radius: 1,
+    moons: 0,
+    textureStyle: "moon",
+    rotationSpeed: 0.05
+  },
+  {
+    id: "uranus",
+    name: "Uranus",
+    kind: "planet",
+    scene: "solar",
+    position: [78, -1.8, 0],
+    accent: "#a6e8ff",
+    distanceFromEarth: "2.6 billion km average",
+    diameter: "50,724 km",
+    facts: [
+      "Rotates on its side relative to its orbit",
+      "Classified as an ice giant"
+    ],
+    description: "A cold cyan world tipped into a dramatic sideways spin.",
+    focusZoom: 0.36,
+    radius: 2.2,
+    distanceFromSunAU: 19.2,
+    moons: 28,
+    textureStyle: "ice",
+    orbitRadius: 78,
+    rotationSpeed: 0.06
+  },
+  {
+    id: "neptune",
+    name: "Neptune",
+    kind: "planet",
+    scene: "solar",
+    position: [94, 1.6, 0],
+    accent: "#598fff",
+    distanceFromEarth: "4.3 billion km average",
+    diameter: "49,244 km",
+    facts: [
+      "Supersonic winds race through its atmosphere",
+      "Another ice giant, deeper blue than Uranus"
+    ],
+    description: "A dark sapphire planet at the edge of the classical Solar System.",
+    focusZoom: 0.37,
+    radius: 2.2,
+    distanceFromSunAU: 30.1,
+    moons: 16,
+    textureStyle: "ice",
+    orbitRadius: 94,
+    rotationSpeed: 0.08
+  },
+  {
+    id: "kuiper-belt",
+    name: "Kuiper Belt",
+    kind: "region",
+    scene: "solar",
+    position: [116, 0, 0],
+    accent: "#9ed0ff",
+    distanceFromEarth: "30 to 50 AU",
+    diameter: "Billions of icy bodies",
+    facts: [
+      "Home to Pluto, Haumea, Makemake, and Eris",
+      "A frozen reservoir left over from Solar System formation"
+    ],
+    description: "A broad ring of icy remnants beyond Neptune that marks the Solar System's outer frontier.",
+    focusZoom: 0.38,
+    radius: 1.4,
+    moons: 0,
+    textureStyle: "moon",
+    rotationSpeed: 0
+  } as PlanetData
+];

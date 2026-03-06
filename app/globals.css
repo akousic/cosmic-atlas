@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --font-sans: "Avenir Next", "Segoe UI", sans-serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", serif;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top, rgba(77, 102, 176, 0.24), transparent 30%),
+    radial-gradient(circle at 70% 20%, rgba(74, 173, 255, 0.16), transparent 22%),
+    linear-gradient(180deg, #04050c 0%, #02030a 45%, #010207 100%);
+  color: white;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans), sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+canvas {
+  touch-action: none;
+}
+
+.app-shell {
+  background-image: var(--app-grid);
+}
+
+.glass-panel {
+  background: linear-gradient(180deg, rgba(8, 10, 19, 0.88), rgba(8, 12, 22, 0.62));
+  border: 1px solid rgba(170, 203, 255, 0.14);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+}
+
+.text-gradient {
+  background: linear-gradient(120deg, #f7fafc 0%, #9cc7ff 40%, #ffe4aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.1;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.24) 0 1px, transparent 1px),
+    radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.16) 0 1px, transparent 1px),
+    radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.18) 0 1px, transparent 1px);
+  background-size: 160px 160px;
+  mix-blend-mode: screen;
+}
+
+.control-button {
+  border: 1px solid rgba(170, 203, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.control-button:hover {
+  background: rgba(118, 215, 255, 0.1);
+  border-color: rgba(170, 203, 255, 0.36);
+  transform: translateY(-1px);
+}
