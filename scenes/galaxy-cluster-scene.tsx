@@ -12,11 +12,18 @@ import { galaxies } from "@/data/galaxies";
 interface GalaxyClusterSceneProps {
   activeId: string;
   intensity: number;
+  compactLabels?: boolean;
   onSelect: (id: string) => void;
   onHover: (id: string | null) => void;
 }
 
-export function GalaxyClusterScene({ activeId, intensity, onSelect, onHover }: GalaxyClusterSceneProps) {
+export function GalaxyClusterScene({
+  activeId,
+  intensity,
+  compactLabels = false,
+  onSelect,
+  onHover
+}: GalaxyClusterSceneProps) {
   const cluster = galaxies.filter((item) => item.scene === "cluster");
   const flow = useRef<THREE.Group>(null);
   const lines = useMemo(
@@ -51,6 +58,7 @@ export function GalaxyClusterScene({ activeId, intensity, onSelect, onHover }: G
           color={galaxy.accent}
           size={galaxy.radiusVisual * 0.42}
           active={activeId === galaxy.id}
+          labelVisible={!compactLabels || activeId === galaxy.id || galaxy.id === "andromeda"}
           opacity={intensity}
           onClick={() => onSelect(galaxy.id)}
           onHover={(hovering) => onHover(hovering ? galaxy.id : null)}

@@ -24,15 +24,24 @@ function spiralParticles(count: number, radius: number) {
 interface MilkyWaySceneProps {
   activeId: string;
   intensity: number;
+  compactLabels?: boolean;
+  reducedEffects?: boolean;
   onSelect: (id: string) => void;
   onHover: (id: string | null) => void;
 }
 
-export function MilkyWayScene({ activeId, intensity, onSelect, onHover }: MilkyWaySceneProps) {
+export function MilkyWayScene({
+  activeId,
+  intensity,
+  compactLabels = false,
+  reducedEffects = false,
+  onSelect,
+  onHover
+}: MilkyWaySceneProps) {
   const milkyWay = galaxies.find((item) => item.id === "milky-way");
   const localBubble = galaxies.find((item) => item.id === "local-bubble");
   const points = useRef<THREE.Points>(null);
-  const positions = useMemo(() => spiralParticles(3200, 18), []);
+  const positions = useMemo(() => spiralParticles(reducedEffects ? 1800 : 3200, 18), [reducedEffects]);
 
   useFrame((_, delta) => {
     if (points.current) {
@@ -64,6 +73,7 @@ export function MilkyWayScene({ activeId, intensity, onSelect, onHover }: MilkyW
         color={milkyWay.accent}
         size={2.2}
         active={activeId === milkyWay.id}
+        labelVisible={!compactLabels || activeId === milkyWay.id || milkyWay.id === "milky-way"}
         opacity={intensity}
         onClick={() => onSelect(milkyWay.id)}
         onHover={(hovering) => onHover(hovering ? milkyWay.id : null)}
@@ -75,6 +85,7 @@ export function MilkyWayScene({ activeId, intensity, onSelect, onHover }: MilkyW
         color={localBubble.accent}
         size={1.1}
         active={activeId === localBubble.id}
+        labelVisible={!compactLabels || activeId === localBubble.id}
         opacity={intensity}
         onClick={() => onSelect(localBubble.id)}
         onHover={(hovering) => onHover(hovering ? localBubble.id : null)}

@@ -50,7 +50,7 @@ export function ObjectMarker({
       {labelVisible ? (
         <Text
           position={[0, size * 2.6, 0]}
-          fontSize={0.75}
+          fontSize={0.68}
           fillOpacity={opacity}
           color={active ? "#ffffff" : "#c5d4ff"}
           anchorX="center"

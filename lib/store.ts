@@ -32,8 +32,9 @@ interface AtlasState {
   syncViewport: (focus: [number, number, number], zoom: number) => void;
   setHovered: (id: string | null) => void;
   focusObject: (id: string) => void;
+  focusScene: (scene: SceneId, zoomOverride?: number) => void;
   toggleInfoPanel: () => void;
-  resetView: () => void;
+  resetView: (zoomOverride?: number) => void;
   startGuidedJourney: () => void;
   stopGuidedJourney: () => void;
   advanceGuidedJourney: () => void;
@@ -98,19 +99,37 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       mode: get().mode === "guided" ? "guided" : get().mode
     });
   },
+  focusScene: (scene, zoomOverride) => {
+    const targetId = SCENE_TARGETS[scene] ?? DEFAULT_SELECTION;
+    const object = objectById[targetId];
+    if (!object) {
+      return;
+    }
+
+    set({
+      mode: "explore",
+      selectedId: targetId,
+      hoveredId: null,
+      targetFocus: getFocusPosition(targetId),
+      targetPan: [0, 0],
+      targetZoom: clamp(zoomOverride ?? object.focusZoom, 0.02, 1),
+      activeScene: scene
+    });
+  },
   toggleInfoPanel: () => set((state) => ({ showInfoPanel: !state.showInfoPanel })),
-  resetView: () => {
+  resetView: (zoomOverride) => {
     const activeScene = get().activeScene;
     const resetTargetId = SCENE_TARGETS[activeScene] ?? DEFAULT_SELECTION;
     const resetObject = objectById[resetTargetId];
     const targetFocus = getFocusPosition(resetTargetId);
+    const nextZoom = clamp(zoomOverride ?? resetObject?.focusZoom ?? 0.08, 0.02, 1);
 
     set({
       mode: "explore",
       selectedId: resetTargetId,
       hoveredId: null,
-      zoom: resetObject?.focusZoom ?? 0.08,
-      targetZoom: resetObject?.focusZoom ?? 0.08,
+      zoom: nextZoom,
+      targetZoom: nextZoom,
       pan: [0, 0],
       targetPan: [0, 0],
       focus: targetFocus,

@@ -11,6 +11,7 @@ import { getSolarObjectPosition, getSolarOrbitPoints } from "@/lib/solar-layout"
 interface SolarSystemSceneProps {
   activeId: string;
   intensity: number;
+  compactLabels?: boolean;
   onSelect: (id: string) => void;
   onHover: (id: string | null) => void;
 }
@@ -31,7 +32,13 @@ function getSolarDisplayRadius(id: string, radius: number) {
   return radius;
 }
 
-export function SolarSystemScene({ activeId, intensity, onSelect, onHover }: SolarSystemSceneProps) {
+export function SolarSystemScene({
+  activeId,
+  intensity,
+  compactLabels = false,
+  onSelect,
+  onHover
+}: SolarSystemSceneProps) {
   const sun = planets.find((item) => item.id === "sun");
   const solarBodies = planets.filter((item) => item.scene === "solar" && item.id !== "sun");
   const activeBody = solarBodies.find((item) => item.id === activeId);
@@ -87,6 +94,12 @@ export function SolarSystemScene({ activeId, intensity, onSelect, onHover }: Sol
           (isMajor && distanceFromActive < 28);
         const showMesh = shouldRenderFullMesh;
         const displayRadius = getSolarDisplayRadius(body.id, body.radius ?? 1);
+        const showLabel =
+          !compactLabels ||
+          body.id === activeId ||
+          body.id === "earth-orbit" ||
+          body.id === "sun" ||
+          body.id === "jupiter";
 
         return (
           <group key={body.id} position={getSolarObjectPosition(body)}>
@@ -109,15 +122,17 @@ export function SolarSystemScene({ activeId, intensity, onSelect, onHover }: Sol
                   opacity={intensity}
                 />
                 <Billboard position={[0, displayRadius * 2.15 + 1.1, 0]}>
-                  <Text
-                    fontSize={body.id === "jupiter" || body.id === "saturn" || body.id === "uranus" ? 1.1 : 0.82}
-                    fillOpacity={intensity}
-                    color={activeId === body.id ? "#ffffff" : "#c5d4ff"}
-                    anchorX="center"
-                    anchorY="middle"
-                  >
-                    {body.name}
-                  </Text>
+                  {showLabel ? (
+                    <Text
+                      fontSize={body.id === "jupiter" || body.id === "saturn" || body.id === "uranus" ? 1.1 : 0.82}
+                      fillOpacity={intensity}
+                      color={activeId === body.id ? "#ffffff" : "#c5d4ff"}
+                      anchorX="center"
+                      anchorY="middle"
+                    >
+                      {body.name}
+                    </Text>
+                  ) : null}
                 </Billboard>
               </group>
             ) : (
@@ -127,6 +142,7 @@ export function SolarSystemScene({ activeId, intensity, onSelect, onHover }: Sol
                 color={body.accent}
                 size={body.id === activeId ? 1.1 : 0.8}
                 active={body.id === activeId}
+                labelVisible={!compactLabels || body.id === activeId}
                 opacity={intensity}
                 onClick={() => onSelect(body.id)}
                 onHover={(hovering) => onHover(hovering ? body.id : null)}
