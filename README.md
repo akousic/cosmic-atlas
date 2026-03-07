@@ -4,6 +4,10 @@ Cosmic Atlas is a cinematic interactive map of the universe built with Next.js, 
 
 The experience is organized as layered scale zones so users can move from Earth through the Solar System, nearby stars, the Milky Way, nearby galaxies, and black holes without trying to render the entire universe in one coordinate system.
 
+## Preview
+
+![Cosmic Atlas preview](./public/preview/cosmic-atlas-preview.png)
+
 ## Stack
 
 - Next.js App Router
