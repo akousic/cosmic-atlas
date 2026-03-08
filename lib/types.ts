@@ -6,6 +6,13 @@ export type SceneId =
   | "cluster"
   | "blackhole";
 
+export type SimulationMotionPreset =
+  | "orbit"
+  | "pulse"
+  | "drift"
+  | "swirl"
+  | "accretion";
+
 export type CosmicKind =
   | "planet"
   | "moon"
@@ -31,6 +38,17 @@ export interface CosmicObject {
   radius?: number;
   travelHighlights?: string[];
   orbitalLabel?: string;
+  simulation?: {
+    motion: SimulationMotionPreset;
+    orbitPeriodDays?: number;
+    phaseOffsetDeg?: number;
+    parentLabel?: string;
+    liveLabel?: string;
+    liveMetricLabel?: string;
+    liveMetricValue?: string;
+    pulseAmplitude?: number;
+    driftAmplitude?: number;
+  };
 }
 
 export interface PlanetData extends CosmicObject {

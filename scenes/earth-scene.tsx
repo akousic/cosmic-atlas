@@ -1,9 +1,11 @@
 "use client";
 
-import { Float, Sparkles, Stars } from "@react-three/drei";
+import { Float, Line, Sparkles, Stars } from "@react-three/drei";
 
-import { planets } from "@/data/planets";
 import { PlanetMesh } from "@/components/experience/planet-mesh";
+import { planets } from "@/data/planets";
+import { getObjectPosition } from "@/lib/simulation";
+import { useAtlasStore } from "@/lib/store";
 
 interface EarthSceneProps {
   activeId: string;
@@ -14,12 +16,24 @@ interface EarthSceneProps {
 }
 
 export function EarthScene({ activeId, intensity, reducedEffects = false, onSelect, onHover }: EarthSceneProps) {
+  const simulationTime = useAtlasStore((state) => state.simulationTime);
   const earth = planets.find((item) => item.id === "earth");
   const moon = planets.find((item) => item.id === "moon");
+  const orbitTrace = planets.find((item) => item.id === "earth-orbit-trace");
 
-  if (!earth || !moon) {
+  if (!earth || !moon || !orbitTrace) {
     return null;
   }
+
+  const moonPosition = getObjectPosition(moon, simulationTime);
+  const orbitPoints = Array.from({ length: 72 }, (_, index) => {
+    const angle = (index / 71) * Math.PI * 2;
+    return [Math.cos(angle) * (moon.orbitRadius ?? 11), Math.sin(angle) * (moon.orbitRadius ?? 11), 0] as [
+      number,
+      number,
+      number
+    ];
+  });
 
   return (
     <group>
@@ -47,8 +61,10 @@ export function EarthScene({ activeId, intensity, reducedEffects = false, onSele
         </group>
       </Float>
 
+      <Line points={orbitPoints} color={orbitTrace.accent} transparent opacity={0.14 * intensity} lineWidth={1} />
+
       <group
-        position={moon.position}
+        position={moonPosition}
         onClick={(event) => {
           event.stopPropagation();
           onSelect(moon.id);

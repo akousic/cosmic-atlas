@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 
+import { DeviceMode } from "@/hooks/use-device-mode";
 import { getSceneDefaultZoom } from "@/lib/camera-config";
 import { useAtlasStore } from "@/lib/store";
-import { DeviceMode } from "@/hooks/use-device-mode";
 
 interface TopBarProps {
   deviceMode: DeviceMode;
@@ -17,6 +17,7 @@ export function TopBar({ deviceMode }: TopBarProps) {
   const resetView = useAtlasStore((state) => state.resetView);
   const activeScene = useAtlasStore((state) => state.activeScene);
   const focusObject = useAtlasStore((state) => state.focusObject);
+  const simulationEnabled = useAtlasStore((state) => state.simulationEnabled);
   const isMobile = deviceMode === "mobile";
   const resetZoom = getSceneDefaultZoom(activeScene, deviceMode);
 
@@ -35,6 +36,10 @@ export function TopBar({ deviceMode }: TopBarProps) {
           Cinematic Universe Map
         </p>
         <h1 className="mt-2 font-display text-2xl text-gradient sm:text-4xl">Cosmic Atlas</h1>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-aurora/20 bg-aurora/10 px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-aurora">
+          <span className="h-2 w-2 rounded-full bg-aurora shadow-[0_0_14px_currentColor]" />
+          {simulationEnabled ? "Ambient Simulation Active" : "Simulation Paused"}
+        </div>
         {!isMobile ? (
           <>
             <p className="mt-2 text-sm text-white/70">

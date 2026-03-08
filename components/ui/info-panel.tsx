@@ -18,6 +18,7 @@ export function InfoPanel({ deviceMode }: InfoPanelProps) {
   const activeId = hoveredId ?? selectedId;
   const object = objectById[activeId];
   const isMobile = deviceMode === "mobile";
+  const liveContext = object?.simulation;
 
   if (!object || !showInfoPanel) {
     return null;
@@ -67,16 +68,39 @@ export function InfoPanel({ deviceMode }: InfoPanelProps) {
           </div>
         </div>
 
+        {liveContext ? (
+          <div className="mt-5 grid grid-cols-1 gap-3 text-sm">
+            {liveContext.parentLabel ? (
+              <div className="rounded-2xl border border-aurora/15 bg-aurora/5 p-3">
+                <p className="text-white/45">Orbiting / Anchored To</p>
+                <p className="mt-1 text-white">{liveContext.parentLabel}</p>
+              </div>
+            ) : null}
+            {liveContext.liveMetricLabel && liveContext.liveMetricValue ? (
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                <p className="text-white/45">{liveContext.liveMetricLabel}</p>
+                <p className="mt-1 text-white">{liveContext.liveMetricValue}</p>
+              </div>
+            ) : null}
+            {liveContext.liveLabel ? (
+              <div className="rounded-2xl border border-aurora/15 bg-aurora/5 p-3">
+                <p className="text-white/45">Live Context</p>
+                <p className="mt-1 text-white">{liveContext.liveLabel}</p>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
         <div className="mt-5">
           <p className="text-xs uppercase tracking-[0.32em] text-white/45">Interesting Facts</p>
           <ul className="mt-3 space-y-2 text-sm leading-6 text-white/75">
             {object.facts.map((fact) => (
-              <li key={fact} className="rounded-2xl border border-white/10 bg-white/4 px-4 py-3">
+              <li key={fact} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                 {fact}
               </li>
             ))}
             {(factByTargetId[object.id] ?? []).map((fact) => (
-              <li key={fact} className="rounded-2xl border border-aurora/18 bg-aurora/4 px-4 py-3">
+              <li key={fact} className="rounded-2xl border border-aurora/20 bg-aurora/5 px-4 py-3">
                 {fact}
               </li>
             ))}

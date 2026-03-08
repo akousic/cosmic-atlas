@@ -10,12 +10,13 @@ import * as THREE from "three";
 
 import { NebulaCloud } from "@/components/experience/nebula-cloud";
 import { Starfield } from "@/components/experience/starfield";
+import { DeviceMode } from "@/hooks/use-device-mode";
 import { getSceneCameraPreset } from "@/lib/camera-config";
 import { objectById } from "@/lib/catalog";
 import { cameraDistanceToZoom, clamp, damp, sceneVisibility, zoomToCameraDistance } from "@/lib/scale";
+import { getObjectPosition } from "@/lib/simulation";
 import { useAtlasStore } from "@/lib/store";
 import { SceneId } from "@/lib/types";
-import { DeviceMode } from "@/hooks/use-device-mode";
 
 const EarthScene = lazy(() => import("@/scenes/earth-scene").then((mod) => ({ default: mod.EarthScene })));
 const SolarSystemScene = lazy(() =>
@@ -63,11 +64,7 @@ function SceneLayer({
     groupRef.current.position.z = depthRef.current;
   });
 
-  return (
-    <group ref={groupRef}>
-      {children}
-    </group>
-  );
+  return <group ref={groupRef}>{children}</group>;
 }
 
 function getPhysicalLookAt(
@@ -119,6 +116,7 @@ function CameraRigWithMode({ deviceMode }: { deviceMode: DeviceMode }) {
   const targetFocus = useAtlasStore((state) => state.targetFocus);
   const targetZoom = useAtlasStore((state) => state.targetZoom);
   const selectedId = useAtlasStore((state) => state.selectedId);
+  const simulationTime = useAtlasStore((state) => state.simulationTime);
   const preset = getSceneCameraPreset(activeScene, deviceMode);
   const isMobile = deviceMode === "mobile";
 
@@ -146,6 +144,34 @@ function CameraRigWithMode({ deviceMode }: { deviceMode: DeviceMode }) {
       true
     );
   }, [preset.maxDistance, preset.minDistance, selectedId, targetFocus, targetZoom]);
+
+  useFrame(() => {
+    const controls = controlsRef.current;
+    const selected = objectById[selectedId];
+    if (!controls || !selected || selected.simulation?.motion !== "orbit") {
+      return;
+    }
+
+    const desiredTarget = new THREE.Vector3(...getObjectPosition(selected, simulationTime));
+    const currentTarget = controls.getTarget(new THREE.Vector3());
+    if (currentTarget.distanceToSquared(desiredTarget) < 0.0001) {
+      return;
+    }
+
+    const currentPosition = controls.getPosition(new THREE.Vector3());
+    const offset = currentPosition.sub(currentTarget);
+    const nextPosition = desiredTarget.clone().add(offset);
+
+    void controls.setLookAt(
+      nextPosition.x,
+      nextPosition.y,
+      nextPosition.z,
+      desiredTarget.x,
+      desiredTarget.y,
+      desiredTarget.z,
+      false
+    );
+  });
 
   return (
     <CameraControls
@@ -189,6 +215,16 @@ function CameraRigWithMode({ deviceMode }: { deviceMode: DeviceMode }) {
       }}
     />
   );
+}
+
+function SimulationDriver() {
+  const advanceSimulation = useAtlasStore((state) => state.advanceSimulation);
+
+  useFrame((_, delta) => {
+    advanceSimulation(delta);
+  });
+
+  return null;
 }
 
 function Experience({ deviceMode }: { deviceMode: DeviceMode }) {
@@ -270,6 +306,7 @@ function Experience({ deviceMode }: { deviceMode: DeviceMode }) {
       </Suspense>
 
       <CameraRigWithMode deviceMode={deviceMode} />
+      <SimulationDriver />
 
       <EffectComposer>
         <Bloom
@@ -286,6 +323,7 @@ function Experience({ deviceMode }: { deviceMode: DeviceMode }) {
 
 export function UniverseCanvas({ deviceMode }: { deviceMode: DeviceMode }) {
   const isMobile = deviceMode === "mobile";
+
   return (
     <div className="absolute inset-0">
       <Canvas
