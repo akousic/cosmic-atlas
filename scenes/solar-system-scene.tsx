@@ -7,6 +7,7 @@ import { ObjectMarker } from "@/components/experience/object-marker";
 import { PlanetMesh } from "@/components/experience/planet-mesh";
 import { planets } from "@/data/planets";
 import { getSolarObjectPosition, getSolarOrbitPoints } from "@/lib/solar-layout";
+import { useAtlasStore } from "@/lib/store";
 
 interface SolarSystemSceneProps {
   activeId: string;
@@ -39,15 +40,16 @@ export function SolarSystemScene({
   onSelect,
   onHover
 }: SolarSystemSceneProps) {
+  const simulationTime = useAtlasStore((state) => state.simulationTime);
   const sun = planets.find((item) => item.id === "sun");
   const solarBodies = planets.filter((item) => item.scene === "solar" && item.id !== "sun");
   const activeBody = solarBodies.find((item) => item.id === activeId);
   const orbitCurves = useMemo(
     () =>
       solarBodies
-        .filter((body) => body.orbitRadius && (body.kind === "planet" || body.id === "kuiper-belt"))
-        .map((body) => getSolarOrbitPoints(body)),
-    [solarBodies]
+        .filter((body) => body.orbitRadius && (body.kind === "planet" || body.kind === "moon" || body.kind === "region"))
+        .map((body) => getSolarOrbitPoints(body, simulationTime)),
+    [simulationTime, solarBodies]
   );
 
   if (!sun) {
@@ -91,7 +93,8 @@ export function SolarSystemScene({
           body.id === activeId ||
           body.id === "earth-orbit" ||
           body.id === "sun" ||
-          (isMajor && distanceFromActive < 28);
+          (isMajor && distanceFromActive < 34) ||
+          body.kind === "moon";
         const showMesh = shouldRenderFullMesh;
         const displayRadius = getSolarDisplayRadius(body.id, body.radius ?? 1);
         const showLabel =
@@ -100,9 +103,11 @@ export function SolarSystemScene({
           body.id === "earth-orbit" ||
           body.id === "sun" ||
           body.id === "jupiter";
+        const position = getSolarObjectPosition(body, simulationTime);
+        const isRegion = body.kind === "region";
 
         return (
-          <group key={body.id} position={getSolarObjectPosition(body)}>
+          <group key={body.id} position={position}>
             {showMesh ? (
               <group
                 onClick={(event) => {
@@ -119,7 +124,7 @@ export function SolarSystemScene({
                   ring={body.id === "saturn"}
                   glow={body.accent}
                   rotationSpeed={body.rotationSpeed}
-                  opacity={intensity}
+                  opacity={isRegion ? intensity * 0.36 : intensity}
                 />
                 <Billboard position={[0, displayRadius * 2.15 + 1.1, 0]}>
                   {showLabel ? (
@@ -140,7 +145,7 @@ export function SolarSystemScene({
                 name={body.name}
                 position={[0, 0, 0]}
                 color={body.accent}
-                size={body.id === activeId ? 1.1 : 0.8}
+                size={body.kind === "region" ? 0.95 : body.id === activeId ? 1.1 : 0.8}
                 active={body.id === activeId}
                 labelVisible={!compactLabels || body.id === activeId}
                 opacity={intensity}

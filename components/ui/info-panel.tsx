@@ -71,12 +71,12 @@ export function InfoPanel({ deviceMode }: InfoPanelProps) {
           <p className="text-xs uppercase tracking-[0.32em] text-white/45">Interesting Facts</p>
           <ul className="mt-3 space-y-2 text-sm leading-6 text-white/75">
             {object.facts.map((fact) => (
-              <li key={fact} className="rounded-2xl border border-white/10 bg-white/4 px-4 py-3">
+              <li key={fact} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                 {fact}
               </li>
             ))}
             {(factByTargetId[object.id] ?? []).map((fact) => (
-              <li key={fact} className="rounded-2xl border border-aurora/18 bg-aurora/4 px-4 py-3">
+              <li key={fact} className="rounded-2xl border border-aurora/20 bg-aurora/5 px-4 py-3">
                 {fact}
               </li>
             ))}

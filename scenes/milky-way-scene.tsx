@@ -6,6 +6,8 @@ import * as THREE from "three";
 
 import { ObjectMarker } from "@/components/experience/object-marker";
 import { galaxies } from "@/data/galaxies";
+import { getGalaxyMotion } from "@/lib/simulation";
+import { useAtlasStore } from "@/lib/store";
 
 function spiralParticles(count: number, radius: number) {
   const positions = new Float32Array(count * 3);
@@ -38,14 +40,15 @@ export function MilkyWayScene({
   onSelect,
   onHover
 }: MilkyWaySceneProps) {
+  const simulationTime = useAtlasStore((state) => state.simulationTime);
   const milkyWay = galaxies.find((item) => item.id === "milky-way");
   const localBubble = galaxies.find((item) => item.id === "local-bubble");
   const points = useRef<THREE.Points>(null);
   const positions = useMemo(() => spiralParticles(reducedEffects ? 1800 : 3200, 18), [reducedEffects]);
 
-  useFrame((_, delta) => {
+  useFrame(() => {
     if (points.current) {
-      points.current.rotation.z += delta * 0.03;
+      points.current.rotation.z = simulationTime * 0.006;
     }
   });
 
@@ -69,7 +72,7 @@ export function MilkyWayScene({
 
       <ObjectMarker
         name={milkyWay.name}
-        position={milkyWay.position}
+        position={getGalaxyMotion(milkyWay, simulationTime)}
         color={milkyWay.accent}
         size={2.2}
         active={activeId === milkyWay.id}
@@ -81,7 +84,7 @@ export function MilkyWayScene({
 
       <ObjectMarker
         name={localBubble.name}
-        position={localBubble.position}
+        position={getGalaxyMotion(localBubble, simulationTime)}
         color={localBubble.accent}
         size={1.1}
         active={activeId === localBubble.id}

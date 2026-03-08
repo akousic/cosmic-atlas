@@ -20,7 +20,13 @@ export const planets: PlanetData[] = [
     distanceFromSunAU: 1,
     moons: 1,
     textureStyle: "earth",
-    rotationSpeed: 0.18
+    rotationSpeed: 0.18,
+    simulation: {
+      motion: "pulse",
+      liveLabel: "Rotating under the ambient simulation clock",
+      liveMetricLabel: "Day length",
+      liveMetricValue: "24 hours"
+    }
   },
   {
     id: "moon",
@@ -40,7 +46,43 @@ export const planets: PlanetData[] = [
     radius: 1.2,
     moons: 0,
     textureStyle: "moon",
-    rotationSpeed: 0.06
+    orbitCenterId: "earth",
+    orbitRadius: 11.4,
+    orbitAngleDeg: 26,
+    orbitInclinationDeg: 5.1,
+    orbitAscendingNodeDeg: 18,
+    rotationSpeed: 0.03,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 27.3,
+      phaseOffsetDeg: 26,
+      parentLabel: "Earth",
+      liveLabel: "Tidally locked orbit under ambient time",
+      liveMetricLabel: "Orbital period",
+      liveMetricValue: "27.3 days"
+    }
+  },
+  {
+    id: "earth-orbit-trace",
+    name: "Orbital Plane",
+    kind: "region",
+    scene: "planet",
+    position: [0, 0, 0],
+    accent: "#7fc5ff",
+    distanceFromEarth: "Cislunar space",
+    diameter: "Moon orbit reference",
+    facts: [
+      "A visual guide for the Moon's compressed orbit in the Earth scene",
+      "Keeps local motion readable without cluttering the cinematic view"
+    ],
+    description: "A faint orbital guide that makes the Earth-Moon system easier to read at a glance.",
+    focusZoom: 0.1,
+    radius: 0.3,
+    textureStyle: "moon",
+    simulation: {
+      motion: "orbit",
+      liveLabel: "Reference guide for local orbital motion"
+    }
   },
   {
     id: "sun",
@@ -59,8 +101,15 @@ export const planets: PlanetData[] = [
     focusZoom: 0.2,
     radius: 5.8,
     textureStyle: "gas",
-    rotationSpeed: 0.04
-  } as PlanetData,
+    rotationSpeed: 0.04,
+    simulation: {
+      motion: "pulse",
+      pulseAmplitude: 0.05,
+      liveLabel: "Photosphere shimmering on the shared clock",
+      liveMetricLabel: "Rotation",
+      liveMetricValue: "About 27 days"
+    }
+  },
   {
     id: "mercury",
     name: "Mercury",
@@ -84,7 +133,16 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 186,
     orbitInclinationDeg: 7,
     orbitAscendingNodeDeg: 48,
-    rotationSpeed: 0.08
+    rotationSpeed: 0.08,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 88,
+      phaseOffsetDeg: 186,
+      parentLabel: "Sun",
+      liveLabel: "Fast inner-world orbit",
+      liveMetricLabel: "Year length",
+      liveMetricValue: "88 days"
+    }
   },
   {
     id: "venus",
@@ -109,7 +167,16 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 164,
     orbitInclinationDeg: 3.4,
     orbitAscendingNodeDeg: 76,
-    rotationSpeed: 0.03
+    rotationSpeed: 0.03,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 225,
+      phaseOffsetDeg: 164,
+      parentLabel: "Sun",
+      liveLabel: "Slow orbital glide inside the inner system",
+      liveMetricLabel: "Year length",
+      liveMetricValue: "225 days"
+    }
   },
   {
     id: "earth-orbit",
@@ -134,8 +201,17 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 115,
     orbitInclinationDeg: 0,
     orbitAscendingNodeDeg: 0,
-    rotationSpeed: 0.14
-  } as PlanetData,
+    rotationSpeed: 0.14,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 365,
+      phaseOffsetDeg: 115,
+      parentLabel: "Sun",
+      liveLabel: "Reference orbit for the habitable zone",
+      liveMetricLabel: "Year length",
+      liveMetricValue: "365 days"
+    }
+  },
   {
     id: "mars",
     name: "Mars",
@@ -159,7 +235,80 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 70,
     orbitInclinationDeg: 1.85,
     orbitAscendingNodeDeg: 49,
-    rotationSpeed: 0.08
+    rotationSpeed: 0.08,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 687,
+      phaseOffsetDeg: 70,
+      parentLabel: "Sun",
+      liveLabel: "Outer rocky orbit under ambient time",
+      liveMetricLabel: "Year length",
+      liveMetricValue: "687 days"
+    }
+  },
+  {
+    id: "ceres",
+    name: "Ceres",
+    kind: "planet",
+    scene: "solar",
+    position: [18, 38, 0.2],
+    accent: "#d8d1c7",
+    distanceFromEarth: "413 million km average",
+    diameter: "940 km",
+    facts: [
+      "Largest object in the asteroid belt",
+      "Contains water-rich minerals beneath a dusty crust"
+    ],
+    description: "A dwarf planet that serves as the asteroid belt's gravitational anchor.",
+    focusZoom: 0.29,
+    radius: 0.62,
+    distanceFromSunAU: 2.77,
+    moons: 0,
+    textureStyle: "rocky",
+    orbitRadius: 38,
+    orbitAngleDeg: 94,
+    orbitInclinationDeg: 10.6,
+    orbitAscendingNodeDeg: 80,
+    rotationSpeed: 0.05,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 1680,
+      phaseOffsetDeg: 94,
+      parentLabel: "Sun",
+      liveLabel: "Dwarf-planet path inside the asteroid belt",
+      liveMetricLabel: "Year length",
+      liveMetricValue: "4.6 years"
+    }
+  },
+  {
+    id: "asteroid-belt",
+    name: "Asteroid Belt",
+    kind: "region",
+    scene: "solar",
+    position: [0, 0, 0],
+    accent: "#b6d7ff",
+    distanceFromEarth: "2.2 to 3.2 AU",
+    diameter: "Millions of rocky bodies",
+    facts: [
+      "Separates the inner rocky planets from the gas giants",
+      "Most of its mass is concentrated in a few large objects like Ceres and Vesta"
+    ],
+    description: "A broad rocky ring that marks the Solar System's transition from inner worlds to giant planets.",
+    focusZoom: 0.3,
+    radius: 1.1,
+    textureStyle: "moon",
+    orbitRadius: 38,
+    orbitAngleDeg: 0,
+    orbitInclinationDeg: 4,
+    orbitAscendingNodeDeg: 12,
+    rotationSpeed: 0,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 1680,
+      phaseOffsetDeg: 0,
+      parentLabel: "Sun",
+      liveLabel: "Compressed orbital band of inner-system debris"
+    }
   },
   {
     id: "jupiter",
@@ -184,7 +333,50 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 23,
     orbitInclinationDeg: 1.3,
     orbitAscendingNodeDeg: 100,
-    rotationSpeed: 0.14
+    rotationSpeed: 0.14,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 4333,
+      phaseOffsetDeg: 23,
+      parentLabel: "Sun",
+      liveLabel: "Gas giant orbit with its inner moon system",
+      liveMetricLabel: "Year length",
+      liveMetricValue: "11.9 years"
+    }
+  },
+  {
+    id: "io",
+    name: "Io",
+    kind: "moon",
+    scene: "solar",
+    position: [43.1, 15.8, 0.9],
+    accent: "#ffd081",
+    distanceFromEarth: "628 million km average",
+    diameter: "3,643 km",
+    facts: [
+      "Most volcanically active world known",
+      "Tidal flexing from Jupiter keeps its interior molten"
+    ],
+    description: "A sulfur-stained moon wracked by giant volcanic plumes.",
+    focusZoom: 0.32,
+    radius: 0.66,
+    moons: 0,
+    textureStyle: "moon",
+    orbitCenterId: "jupiter",
+    orbitRadius: 3.4,
+    orbitAngleDeg: 312,
+    orbitInclinationDeg: 0.04,
+    orbitAscendingNodeDeg: 12,
+    rotationSpeed: 0.08,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 1.8,
+      phaseOffsetDeg: 312,
+      parentLabel: "Jupiter",
+      liveLabel: "Volcanic inner moon whipping around Jupiter",
+      liveMetricLabel: "Orbital period",
+      liveMetricValue: "1.8 days"
+    }
   },
   {
     id: "europa",
@@ -209,7 +401,16 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 48,
     orbitInclinationDeg: 0.47,
     orbitAscendingNodeDeg: 42,
-    rotationSpeed: 0.09
+    rotationSpeed: 0.09,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 3.6,
+      phaseOffsetDeg: 48,
+      parentLabel: "Jupiter",
+      liveLabel: "Ocean-world orbit under the shared clock",
+      liveMetricLabel: "Orbital period",
+      liveMetricValue: "3.6 days"
+    }
   },
   {
     id: "ganymede",
@@ -234,7 +435,50 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 212,
     orbitInclinationDeg: 0.2,
     orbitAscendingNodeDeg: 18,
-    rotationSpeed: 0.07
+    rotationSpeed: 0.07,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 7.2,
+      phaseOffsetDeg: 212,
+      parentLabel: "Jupiter",
+      liveLabel: "Largest Jovian moon on a wide inner orbit",
+      liveMetricLabel: "Orbital period",
+      liveMetricValue: "7.2 days"
+    }
+  },
+  {
+    id: "callisto",
+    name: "Callisto",
+    kind: "moon",
+    scene: "solar",
+    position: [34, 22, -2.4],
+    accent: "#bda98f",
+    distanceFromEarth: "628 million km average",
+    diameter: "4,821 km",
+    facts: [
+      "Heavily cratered and geologically ancient",
+      "May hide a deep salty ocean beneath the ice"
+    ],
+    description: "A dark battered moon that preserves some of the Solar System's oldest terrain.",
+    focusZoom: 0.33,
+    radius: 0.88,
+    moons: 0,
+    textureStyle: "moon",
+    orbitCenterId: "jupiter",
+    orbitRadius: 8.4,
+    orbitAngleDeg: 132,
+    orbitInclinationDeg: 0.28,
+    orbitAscendingNodeDeg: 9,
+    rotationSpeed: 0.05,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 16.7,
+      phaseOffsetDeg: 132,
+      parentLabel: "Jupiter",
+      liveLabel: "Outer Galilean moon on a broad orbit",
+      liveMetricLabel: "Orbital period",
+      liveMetricValue: "16.7 days"
+    }
   },
   {
     id: "saturn",
@@ -259,7 +503,16 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 350,
     orbitInclinationDeg: 2.49,
     orbitAscendingNodeDeg: 113,
-    rotationSpeed: 0.11
+    rotationSpeed: 0.11,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 10759,
+      phaseOffsetDeg: 350,
+      parentLabel: "Sun",
+      liveLabel: "Ringed giant orbiting deep in the outer system",
+      liveMetricLabel: "Year length",
+      liveMetricValue: "29.5 years"
+    }
   },
   {
     id: "titan",
@@ -284,7 +537,50 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 58,
     orbitInclinationDeg: 0.35,
     orbitAscendingNodeDeg: 28,
-    rotationSpeed: 0.05
+    rotationSpeed: 0.05,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 15.9,
+      phaseOffsetDeg: 58,
+      parentLabel: "Saturn",
+      liveLabel: "Atmospheric moon circling Saturn's rings",
+      liveMetricLabel: "Orbital period",
+      liveMetricValue: "15.9 days"
+    }
+  },
+  {
+    id: "enceladus",
+    name: "Enceladus",
+    kind: "moon",
+    scene: "solar",
+    position: [56.8, -8.2, -0.2],
+    accent: "#eef7ff",
+    distanceFromEarth: "1.27 billion km average",
+    diameter: "504 km",
+    facts: [
+      "Jets of water vapor erupt from fractures near its south pole",
+      "One of the best ocean-world targets beyond Europa"
+    ],
+    description: "A bright icy moon spraying plumes from an ocean hidden below its crust.",
+    focusZoom: 0.35,
+    radius: 0.54,
+    moons: 0,
+    textureStyle: "moon",
+    orbitCenterId: "saturn",
+    orbitRadius: 4.6,
+    orbitAngleDeg: 182,
+    orbitInclinationDeg: 0.01,
+    orbitAscendingNodeDeg: 4,
+    rotationSpeed: 0.06,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 1.4,
+      phaseOffsetDeg: 182,
+      parentLabel: "Saturn",
+      liveLabel: "Plume-rich moon on a tight Saturnian orbit",
+      liveMetricLabel: "Orbital period",
+      liveMetricValue: "1.4 days"
+    }
   },
   {
     id: "uranus",
@@ -309,7 +605,16 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 324,
     orbitInclinationDeg: 0.77,
     orbitAscendingNodeDeg: 74,
-    rotationSpeed: 0.06
+    rotationSpeed: 0.06,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 30687,
+      phaseOffsetDeg: 324,
+      parentLabel: "Sun",
+      liveLabel: "Ice giant rolling along a tilted orbit",
+      liveMetricLabel: "Year length",
+      liveMetricValue: "84 years"
+    }
   },
   {
     id: "neptune",
@@ -334,7 +639,152 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 300,
     orbitInclinationDeg: 1.77,
     orbitAscendingNodeDeg: 131,
-    rotationSpeed: 0.08
+    rotationSpeed: 0.08,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 60190,
+      phaseOffsetDeg: 300,
+      parentLabel: "Sun",
+      liveLabel: "Outer ice giant drifting through the shared clock",
+      liveMetricLabel: "Year length",
+      liveMetricValue: "164.8 years"
+    }
+  },
+  {
+    id: "triton",
+    name: "Triton",
+    kind: "moon",
+    scene: "solar",
+    position: [51.3, -84.1, -1.8],
+    accent: "#cfe8ff",
+    distanceFromEarth: "4.3 billion km average",
+    diameter: "2,707 km",
+    facts: [
+      "Largest moon of Neptune",
+      "Orbits backward, suggesting it was captured from the Kuiper Belt"
+    ],
+    description: "A frozen captured world with nitrogen geysers and a retrograde orbit.",
+    focusZoom: 0.38,
+    radius: 0.72,
+    moons: 0,
+    textureStyle: "moon",
+    orbitCenterId: "neptune",
+    orbitRadius: 4.8,
+    orbitAngleDeg: 52,
+    orbitInclinationDeg: 156,
+    orbitAscendingNodeDeg: 220,
+    rotationSpeed: 0.04,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 5.9,
+      phaseOffsetDeg: 52,
+      parentLabel: "Neptune",
+      liveLabel: "Captured moon on a retrograde orbit",
+      liveMetricLabel: "Orbital period",
+      liveMetricValue: "5.9 days"
+    }
+  },
+  {
+    id: "pluto",
+    name: "Pluto",
+    kind: "planet",
+    scene: "solar",
+    position: [12.6, -108.5, -6.4],
+    accent: "#d8c4b4",
+    distanceFromEarth: "5.9 billion km average",
+    diameter: "2,377 km",
+    facts: [
+      "A dwarf planet with nitrogen ice plains and water-ice mountains",
+      "Its orbit is tilted and more eccentric than the major planets"
+    ],
+    description: "A distant dwarf world that opened the modern era of Kuiper Belt exploration.",
+    focusZoom: 0.39,
+    radius: 0.74,
+    distanceFromSunAU: 39.5,
+    moons: 5,
+    textureStyle: "moon",
+    orbitRadius: 111,
+    orbitAngleDeg: 278,
+    orbitInclinationDeg: 17.2,
+    orbitAscendingNodeDeg: 110,
+    rotationSpeed: 0.03,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 90560,
+      phaseOffsetDeg: 278,
+      parentLabel: "Sun",
+      liveLabel: "Dwarf planet roaming the Kuiper Belt",
+      liveMetricLabel: "Year length",
+      liveMetricValue: "248 years"
+    }
+  },
+  {
+    id: "charon",
+    name: "Charon",
+    kind: "moon",
+    scene: "solar",
+    position: [15.1, -106.4, -6.1],
+    accent: "#d0d7e2",
+    distanceFromEarth: "5.9 billion km average",
+    diameter: "1,212 km",
+    facts: [
+      "So large relative to Pluto that the pair is often treated as a binary system",
+      "Both bodies are tidally locked to each other"
+    ],
+    description: "Pluto's oversized companion, locked in a slow celestial dance.",
+    focusZoom: 0.4,
+    radius: 0.48,
+    moons: 0,
+    textureStyle: "moon",
+    orbitCenterId: "pluto",
+    orbitRadius: 2.6,
+    orbitAngleDeg: 46,
+    orbitInclinationDeg: 0,
+    orbitAscendingNodeDeg: 16,
+    rotationSpeed: 0.02,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 6.4,
+      phaseOffsetDeg: 46,
+      parentLabel: "Pluto",
+      liveLabel: "Binary-dwarf companion under the ambient clock",
+      liveMetricLabel: "Orbital period",
+      liveMetricValue: "6.4 days"
+    }
+  },
+  {
+    id: "eris",
+    name: "Eris",
+    kind: "planet",
+    scene: "solar",
+    position: [-42, -118, -8],
+    accent: "#ece5da",
+    distanceFromEarth: "14.5 billion km average",
+    diameter: "2,326 km",
+    facts: [
+      "Its discovery helped trigger Pluto's reclassification",
+      "One of the most massive known dwarf planets"
+    ],
+    description: "A far-flung icy dwarf world tracing a remote and highly elongated path.",
+    focusZoom: 0.41,
+    radius: 0.7,
+    distanceFromSunAU: 67.7,
+    moons: 1,
+    textureStyle: "ice",
+    orbitRadius: 128,
+    orbitAngleDeg: 214,
+    orbitInclinationDeg: 44,
+    orbitAscendingNodeDeg: 36,
+    rotationSpeed: 0.02,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 203830,
+      phaseOffsetDeg: 214,
+      parentLabel: "Sun",
+      liveLabel: "Remote dwarf planet beyond Pluto's path",
+      liveMetricLabel: "Year length",
+      liveMetricValue: "558 years"
+    }
   },
   {
     id: "kuiper-belt",
@@ -358,6 +808,44 @@ export const planets: PlanetData[] = [
     orbitAngleDeg: 272,
     orbitInclinationDeg: 8,
     orbitAscendingNodeDeg: 110,
-    rotationSpeed: 0
-  } as PlanetData
+    rotationSpeed: 0,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 90560,
+      phaseOffsetDeg: 272,
+      parentLabel: "Sun",
+      liveLabel: "Icy frontier of dwarf planets and comet nuclei"
+    }
+  },
+  {
+    id: "scattered-disk",
+    name: "Scattered Disk",
+    kind: "region",
+    scene: "solar",
+    position: [-10, -132, -9],
+    accent: "#88bcff",
+    distanceFromEarth: "Beyond 50 AU",
+    diameter: "Highly elongated icy orbits",
+    facts: [
+      "Thought to feed some long-period comet populations",
+      "Its members were likely kicked outward by giant planets"
+    ],
+    description: "A sparse, restless halo of icy bodies on stretched and tilted solar orbits.",
+    focusZoom: 0.42,
+    radius: 1.2,
+    moons: 0,
+    textureStyle: "moon",
+    orbitRadius: 132,
+    orbitAngleDeg: 208,
+    orbitInclinationDeg: 24,
+    orbitAscendingNodeDeg: 44,
+    rotationSpeed: 0,
+    simulation: {
+      motion: "orbit",
+      orbitPeriodDays: 120000,
+      phaseOffsetDeg: 208,
+      parentLabel: "Sun",
+      liveLabel: "Outer debris reservoir stirred by giant-planet history"
+    }
+  }
 ];

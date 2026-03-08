@@ -2,12 +2,15 @@
 
 import { Line } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import * as THREE from "three";
 
 import { NebulaCloud } from "@/components/experience/nebula-cloud";
 import { ObjectMarker } from "@/components/experience/object-marker";
 import { galaxies } from "@/data/galaxies";
+import { getGalaxyMotion } from "@/lib/simulation";
+import { useAtlasStore } from "@/lib/store";
+import { Vec3 } from "@/lib/types";
 
 interface GalaxyClusterSceneProps {
   activeId: string;
@@ -24,20 +27,27 @@ export function GalaxyClusterScene({
   onSelect,
   onHover
 }: GalaxyClusterSceneProps) {
+  const simulationTime = useAtlasStore((state) => state.simulationTime);
   const cluster = galaxies.filter((item) => item.scene === "cluster");
   const flow = useRef<THREE.Group>(null);
-  const lines = useMemo(
-    () => [
-      [cluster[0]?.position ?? [0, 0, 0], cluster[1]?.position ?? [0, 0, 0]],
-      [cluster[0]?.position ?? [0, 0, 0], cluster[2]?.position ?? [0, 0, 0]],
-      [cluster[0]?.position ?? [0, 0, 0], cluster[3]?.position ?? [0, 0, 0]]
+  const lines: [Vec3, Vec3][] = [
+    [
+      cluster[0] ? getGalaxyMotion(cluster[0], simulationTime) : [0, 0, 0],
+      cluster[1] ? getGalaxyMotion(cluster[1], simulationTime) : [0, 0, 0]
     ],
-    [cluster]
-  );
+    [
+      cluster[0] ? getGalaxyMotion(cluster[0], simulationTime) : [0, 0, 0],
+      cluster[2] ? getGalaxyMotion(cluster[2], simulationTime) : [0, 0, 0]
+    ],
+    [
+      cluster[0] ? getGalaxyMotion(cluster[0], simulationTime) : [0, 0, 0],
+      cluster[3] ? getGalaxyMotion(cluster[3], simulationTime) : [0, 0, 0]
+    ]
+  ];
 
-  useFrame((_, delta) => {
+  useFrame(() => {
     if (flow.current) {
-      flow.current.rotation.z -= delta * 0.01;
+      flow.current.rotation.z = -simulationTime * 0.002;
     }
   });
 
@@ -54,7 +64,7 @@ export function GalaxyClusterScene({
         <ObjectMarker
           key={galaxy.id}
           name={galaxy.name}
-          position={galaxy.position}
+          position={getGalaxyMotion(galaxy, simulationTime)}
           color={galaxy.accent}
           size={galaxy.radiusVisual * 0.42}
           active={activeId === galaxy.id}

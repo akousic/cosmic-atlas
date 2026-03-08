@@ -18,7 +18,13 @@ export const blackHoles: BlackHoleData[] = [
     focusZoom: 0.9,
     mass: "4.3 million solar masses",
     radiusVisual: 3.2,
-    spin: "Likely moderate to high"
+    spin: "Likely moderate to high",
+    simulation: {
+      motion: "accretion",
+      liveLabel: "Accretion glow synced to the ambient clock",
+      liveMetricLabel: "Spin",
+      liveMetricValue: "Likely moderate to high"
+    }
   },
   {
     id: "m87-star",
@@ -37,7 +43,13 @@ export const blackHoles: BlackHoleData[] = [
     focusZoom: 0.96,
     mass: "6.5 billion solar masses",
     radiusVisual: 4.2,
-    spin: "Likely high"
+    spin: "Likely high",
+    simulation: {
+      motion: "accretion",
+      liveLabel: "Accretion ring breathing on the shared clock",
+      liveMetricLabel: "Spin",
+      liveMetricValue: "Likely high"
+    }
   },
   {
     id: "ton-618",
@@ -56,6 +68,12 @@ export const blackHoles: BlackHoleData[] = [
     focusZoom: 1,
     mass: "66 billion solar masses",
     radiusVisual: 5.4,
-    spin: "Unknown"
+    spin: "Unknown",
+    simulation: {
+      motion: "accretion",
+      liveLabel: "Quasar-scale accretion stylized under ambient time",
+      liveMetricLabel: "Spin",
+      liveMetricValue: "Unknown"
+    }
   }
 ];

@@ -2,10 +2,10 @@
 
 import { create } from "zustand";
 
-import { GUIDED_STEPS, SCENE_TARGETS } from "@/lib/constants";
 import { objectById } from "@/lib/catalog";
+import { GUIDED_STEPS, SCENE_TARGETS } from "@/lib/constants";
 import { clamp } from "@/lib/scale";
-import { getSolarObjectPosition } from "@/lib/solar-layout";
+import { getObjectPosition } from "@/lib/simulation";
 import { SceneId } from "@/lib/types";
 
 type ExploreMode = "explore" | "guided";
@@ -24,11 +24,15 @@ interface AtlasState {
   hoveredId: string | null;
   guidedIndex: number;
   showInfoPanel: boolean;
+  simulationEnabled: boolean;
+  simulationTime: number;
+  simulationSpeed: number;
   start: () => void;
   setMode: (mode: ExploreMode) => void;
   nudgeZoom: (delta: number) => void;
   setZoomTarget: (value: number) => void;
   setPanTarget: (pan: [number, number]) => void;
+  moveFocusToward: (point: [number, number, number], strength?: number) => void;
   syncViewport: (focus: [number, number, number], zoom: number) => void;
   setHovered: (id: string | null) => void;
   focusObject: (id: string) => void;
@@ -38,17 +42,18 @@ interface AtlasState {
   startGuidedJourney: () => void;
   stopGuidedJourney: () => void;
   advanceGuidedJourney: () => void;
+  advanceSimulation: (delta: number) => void;
 }
 
 const DEFAULT_SELECTION = "earth";
 
-function getFocusPosition(id: string) {
+function getFocusPosition(id: string, simulationTime: number) {
   const object = objectById[id];
   if (!object) {
     return [0, 0, 0] as [number, number, number];
   }
 
-  return object.scene === "solar" ? getSolarObjectPosition(object as never) : object.position;
+  return getObjectPosition(object, simulationTime);
 }
 
 export const useAtlasStore = create<AtlasState>((set, get) => ({
@@ -65,6 +70,9 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   hoveredId: null,
   guidedIndex: 0,
   showInfoPanel: true,
+  simulationEnabled: true,
+  simulationTime: 0,
+  simulationSpeed: 1.35,
   start: () => set({ started: true }),
   setMode: (mode) => set({ mode }),
   nudgeZoom: (delta) => {
@@ -76,6 +84,14 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     set({ targetZoom: next });
   },
   setPanTarget: (pan) => set({ targetPan: pan }),
+  moveFocusToward: (point, strength = 0.42) =>
+    set((state) => ({
+      targetFocus: [
+        state.focus[0] + (point[0] - state.focus[0]) * strength,
+        state.focus[1] + (point[1] - state.focus[1]) * strength,
+        state.focus[2] + (point[2] - state.focus[2]) * strength
+      ]
+    })),
   syncViewport: (focus, zoom) =>
     set({
       zoom,
@@ -88,7 +104,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     if (!object) {
       return;
     }
-    const targetFocus = object.scene === "solar" ? getSolarObjectPosition(object as never) : object.position;
+    const targetFocus = getObjectPosition(object, get().simulationTime);
 
     set({
       selectedId: id,
@@ -110,7 +126,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       mode: "explore",
       selectedId: targetId,
       hoveredId: null,
-      targetFocus: getFocusPosition(targetId),
+      targetFocus: getFocusPosition(targetId, get().simulationTime),
       targetPan: [0, 0],
       targetZoom: clamp(zoomOverride ?? object.focusZoom, 0.02, 1),
       activeScene: scene
@@ -121,8 +137,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     const activeScene = get().activeScene;
     const resetTargetId = SCENE_TARGETS[activeScene] ?? DEFAULT_SELECTION;
     const resetObject = objectById[resetTargetId];
-    const targetFocus = getFocusPosition(resetTargetId);
     const nextZoom = clamp(zoomOverride ?? resetObject?.focusZoom ?? 0.08, 0.02, 1);
+    const targetFocus = getFocusPosition(resetTargetId, get().simulationTime);
 
     set({
       mode: "explore",
@@ -149,5 +165,16 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     const step = GUIDED_STEPS[nextIndex];
     set({ guidedIndex: nextIndex, mode: "guided" });
     get().focusObject(step.targetId);
+  },
+  advanceSimulation: (delta) => {
+    if (!get().simulationEnabled) {
+      return;
+    }
+
+    const nextSimulationTime = get().simulationTime + delta * get().simulationSpeed;
+
+    set({
+      simulationTime: nextSimulationTime
+    });
   }
 }));

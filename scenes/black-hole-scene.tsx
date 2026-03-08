@@ -1,8 +1,9 @@
 "use client";
 
-import { ObjectMarker } from "@/components/experience/object-marker";
 import { BlackHoleCore } from "@/components/experience/black-hole-core";
+import { ObjectMarker } from "@/components/experience/object-marker";
 import { blackHoles } from "@/data/blackholes";
+import { useAtlasStore } from "@/lib/store";
 
 interface BlackHoleSceneProps {
   activeId: string;
@@ -19,11 +20,18 @@ export function BlackHoleScene({
   onSelect,
   onHover
 }: BlackHoleSceneProps) {
+  const simulationTime = useAtlasStore((state) => state.simulationTime);
   const primary = blackHoles.find((item) => item.id === activeId) ?? blackHoles[1];
+  const simulationPulse = 1 + Math.sin(simulationTime * 0.18) * 0.12;
 
   return (
     <group>
-      <BlackHoleCore radius={primary.radiusVisual} opacity={intensity} />
+      <BlackHoleCore
+        radius={primary.radiusVisual}
+        opacity={intensity}
+        simulationTime={simulationTime}
+        simulationPulse={simulationPulse}
+      />
 
       {blackHoles.map((hole) => (
         <ObjectMarker

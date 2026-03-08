@@ -61,9 +61,16 @@ const LensingMaterial = shaderMaterial(
 interface BlackHoleCoreProps {
   radius: number;
   opacity?: number;
+  simulationTime?: number;
+  simulationPulse?: number;
 }
 
-export function BlackHoleCore({ radius, opacity = 1 }: BlackHoleCoreProps) {
+export function BlackHoleCore({
+  radius,
+  opacity = 1,
+  simulationTime = 0,
+  simulationPulse = 1
+}: BlackHoleCoreProps) {
   const accretionRef = useRef<THREE.ShaderMaterial | null>(null);
   const lensRef = useRef<THREE.ShaderMaterial | null>(null);
   const accretionMaterial = useMemo(() => {
@@ -92,12 +99,13 @@ export function BlackHoleCore({ radius, opacity = 1 }: BlackHoleCoreProps) {
   );
 
   useFrame((state) => {
+    const time = simulationTime || state.clock.elapsedTime;
     if (accretionRef.current) {
-      accretionRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+      accretionRef.current.uniforms.uTime.value = time * simulationPulse;
       accretionRef.current.opacity = opacity;
     }
     if (lensRef.current) {
-      lensRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+      lensRef.current.uniforms.uTime.value = time * simulationPulse;
       lensRef.current.opacity = opacity * 0.7;
     }
   });
