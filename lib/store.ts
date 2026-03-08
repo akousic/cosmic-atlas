@@ -32,6 +32,7 @@ interface AtlasState {
   nudgeZoom: (delta: number) => void;
   setZoomTarget: (value: number) => void;
   setPanTarget: (pan: [number, number]) => void;
+  moveFocusToward: (point: [number, number, number], strength?: number) => void;
   syncViewport: (focus: [number, number, number], zoom: number) => void;
   setHovered: (id: string | null) => void;
   focusObject: (id: string) => void;
@@ -83,6 +84,14 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     set({ targetZoom: next });
   },
   setPanTarget: (pan) => set({ targetPan: pan }),
+  moveFocusToward: (point, strength = 0.42) =>
+    set((state) => ({
+      targetFocus: [
+        state.focus[0] + (point[0] - state.focus[0]) * strength,
+        state.focus[1] + (point[1] - state.focus[1]) * strength,
+        state.focus[2] + (point[2] - state.focus[2]) * strength
+      ]
+    })),
   syncViewport: (focus, zoom) =>
     set({
       zoom,
@@ -163,11 +172,9 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     }
 
     const nextSimulationTime = get().simulationTime + delta * get().simulationSpeed;
-    const selected = objectById[get().selectedId];
 
     set({
-      simulationTime: nextSimulationTime,
-      targetFocus: selected ? getObjectPosition(selected, nextSimulationTime) : get().targetFocus
+      simulationTime: nextSimulationTime
     });
   }
 }));

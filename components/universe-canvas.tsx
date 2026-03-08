@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { CameraControls } from "@react-three/drei";
 import { Bloom, EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
 import { Canvas, useFrame } from "@react-three/fiber";
+import type { ThreeEvent } from "@react-three/fiber";
 import CameraControlsImpl from "camera-controls";
 import * as THREE from "three";
 
@@ -67,6 +68,24 @@ function SceneLayer({
   return <group ref={groupRef}>{children}</group>;
 }
 
+function SceneClickPlane() {
+  const activeScene = useAtlasStore((state) => state.activeScene);
+  const moveFocusToward = useAtlasStore((state) => state.moveFocusToward);
+
+  return (
+    <mesh
+      position={[0, 0, -6]}
+      onClick={(event: ThreeEvent<MouseEvent>) => {
+        event.stopPropagation();
+        moveFocusToward([event.point.x, event.point.y, 0], activeScene === "solar" ? 0.34 : 0.42);
+      }}
+    >
+      <planeGeometry args={[480, 480]} />
+      <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+    </mesh>
+  );
+}
+
 function getPhysicalLookAt(
   controls: CameraControlsImpl,
   target: [number, number, number],
@@ -110,6 +129,7 @@ function getPhysicalLookAt(
 
 function CameraRigWithMode({ deviceMode }: { deviceMode: DeviceMode }) {
   const controlsRef = useRef<CameraControlsImpl | null>(null);
+  const solarTrackingLockedRef = useRef(false);
   const activeScene = useAtlasStore((state) => state.activeScene);
   const syncViewport = useAtlasStore((state) => state.syncViewport);
   const setHovered = useAtlasStore((state) => state.setHovered);
@@ -119,6 +139,27 @@ function CameraRigWithMode({ deviceMode }: { deviceMode: DeviceMode }) {
   const simulationTime = useAtlasStore((state) => state.simulationTime);
   const preset = getSceneCameraPreset(activeScene, deviceMode);
   const isMobile = deviceMode === "mobile";
+
+  useEffect(() => {
+    solarTrackingLockedRef.current = false;
+  }, [activeScene, selectedId]);
+
+  useEffect(() => {
+    if (activeScene !== "solar") {
+      return;
+    }
+
+    const selected = objectById[selectedId];
+    if (!selected || selected.scene !== "solar" || selected.simulation?.motion !== "orbit") {
+      return;
+    }
+
+    const selectedPosition = new THREE.Vector3(...getObjectPosition(selected, simulationTime));
+    const targetPosition = new THREE.Vector3(...targetFocus);
+    if (selectedPosition.distanceToSquared(targetPosition) > 1) {
+      solarTrackingLockedRef.current = true;
+    }
+  }, [activeScene, selectedId, simulationTime, targetFocus]);
 
   useEffect(() => {
     const controls = controlsRef.current;
@@ -148,7 +189,12 @@ function CameraRigWithMode({ deviceMode }: { deviceMode: DeviceMode }) {
   useFrame(() => {
     const controls = controlsRef.current;
     const selected = objectById[selectedId];
-    if (!controls || !selected || selected.simulation?.motion !== "orbit") {
+    if (
+      !controls ||
+      !selected ||
+      selected.simulation?.motion !== "orbit" ||
+      (activeScene === "solar" && solarTrackingLockedRef.current)
+    ) {
       return;
     }
 
@@ -184,7 +230,7 @@ function CameraRigWithMode({ deviceMode }: { deviceMode: DeviceMode }) {
       dollySpeed={isMobile ? 0.16 : 0.22}
       minDistance={preset.minDistance}
       maxDistance={preset.maxDistance}
-      truckSpeed={isMobile ? 1.1 : 0.75}
+      truckSpeed={activeScene === "solar" ? (isMobile ? 1.4 : 1.05) : isMobile ? 1.1 : 0.75}
       azimuthRotateSpeed={isMobile ? 0.48 : 0.6}
       polarRotateSpeed={isMobile ? 0.42 : 0.52}
       minPolarAngle={0.18}
@@ -202,6 +248,9 @@ function CameraRigWithMode({ deviceMode }: { deviceMode: DeviceMode }) {
       }}
       onStart={() => {
         setHovered(null);
+        if (activeScene === "solar") {
+          solarTrackingLockedRef.current = true;
+        }
       }}
       onChange={() => {
         const controls = controlsRef.current;
@@ -245,6 +294,7 @@ function Experience({ deviceMode }: { deviceMode: DeviceMode }) {
       <Starfield zoom={zoom} densityScale={reducedEffects ? 0.66 : 1} />
       <NebulaCloud position={[20, 18, -30]} scale={40} color="rgba(110, 190, 255, 0.6)" />
       <NebulaCloud position={[-28, -12, -18]} scale={34} color="rgba(255, 140, 110, 0.65)" />
+      <SceneClickPlane />
 
       <Suspense fallback={null}>
         <SceneLayer scene="planet">
